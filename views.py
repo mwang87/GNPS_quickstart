@@ -105,14 +105,20 @@ def upload_to_gnps(input_filename, folder_for_spectra, group_name):
 
     with ftputil.FTPHost(url, credentials.USERNAME, credentials.PASSWORD) as ftp_host:
         names = ftp_host.listdir(ftp_host.curdir)
-        if not folder_for_spectra in names:
-            print("MAKING DIR")
-            ftp_host.mkdir(folder_for_spectra)
+        try:
+            if not folder_for_spectra in names:
+                print("MAKING DIR")
+                ftp_host.mkdir(folder_for_spectra)
+        except:
+            print("Cannot Make Folder", folder_for_spectra)
 
         ftp_host.chdir(folder_for_spectra)
-        if not group_name in ftp_host.listdir(ftp_host.curdir):
-            print("MAKING Group DIR")
-            ftp_host.mkdir(group_name)
+        try:
+            if not group_name in ftp_host.listdir(ftp_host.curdir):
+                print("MAKING Group DIR")
+                ftp_host.mkdir(group_name)
+        except:
+            print("Cannot Make Folder", group_name)
         ftp_host.chdir(group_name)
 
         ftp_host.upload(input_filename, os.path.basename(input_filename))
