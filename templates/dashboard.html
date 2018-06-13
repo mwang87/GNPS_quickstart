@@ -8,6 +8,10 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
+
+
 
     <!--
       DO NOT SIMPLY COPY THOSE LINES. Download the JS and CSS files from the
@@ -22,6 +26,8 @@
         .dropzone .dz-message { font-weight: 400; }
         .dropzone .dz-message .note { font-size: 0.8em; font-weight: 200; display: block; margin-top: 1.4rem; }
         .container-fluid { min-height: 100%; height: 100%;}
+
+
     </style>
 
 </head>
@@ -80,7 +86,8 @@
               <div class="col-sm"></div>
               <div class="col-sm">
                   <div class="text-center" >
-                      <button class="btn btn-primary" onclick="myFunction()">Analyze Uploaded Files with GNPS Molecular Networking</button>
+                      <button id="analyzebutton" class="btn btn-primary" onclick="myFunction()" >Analyze Uploaded Files with GNPS Molecular Networking </button>
+                        <!-- <button class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'>" onclick="myFunction()">Analyze Uploaded Files with GNPS Molecular Networking</button> -->
                   </div>
               </div>
               <div class="col-sm"></div>
@@ -105,14 +112,14 @@
     </div>
 
 
-
     <script>
         group1dropzone = new Dropzone("#group1", { url: "/upload1", maxFilesize: 200, parallelUploads:1});
         group2dropzone = new Dropzone("#group2", { url: "/upload2", maxFilesize: 200, parallelUploads:1});
         group3dropzone = new Dropzone("#group3", { url: "/upload3", maxFilesize: 200, parallelUploads:1});
 
-
         function myFunction() {
+            $("#analyzebutton").html("<i class='fa fa-spinner fa-spin '></i> Processing")
+
             $.ajax({
             url: '/analyze',
             type: 'POST',
@@ -123,6 +130,7 @@
             },
             error: function(error) {
                 alert(error["responseJSON"]["status"])
+                $("#analyzebutton").html("Analyze Uploaded Files with GNPS Molecular Networking")
             }
         });
 
