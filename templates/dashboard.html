@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>GNPS Express Molecular Networking</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    <!--
+      DO NOT SIMPLY COPY THOSE LINES. Download the JS and CSS files from the
+      latest release (https://github.com/enyo/dropzone/releases/latest), and
+      host them yourself!
+    -->
+    <script src="https://rawgit.com/enyo/dropzone/master/dist/dropzone.js"></script>
+    <link rel="stylesheet" href="https://rawgit.com/enyo/dropzone/master/dist/dropzone.css">
+
+</head>
+
+<body>
+    <!-- A grey horizontal navbar that becomes vertical on small screens -->
+    <nav class="navbar navbar-expand-sm bg-light navbar-light">
+        <a class="navbar-brand" href="gnps.ucsd.edu">
+            <img src="/static/img/GNPS_logo.png" alt="Logo" style="width:120px;">
+        </a>
+
+      <!-- Links -->
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Quick Start Molecular Networking</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://bix-lab.ucsd.edu/display/Public/GNPS+Documentation+Page">Documentation</a>
+        </li>
+      </ul>
+
+    </nav>
+
+
+    <div>
+        <p>
+          Drag and drop mzXML/mzML files here to quickly run a molecular network. It is limited to 5 maximum spectrum files with each file limited to 200MB. Data uploaded will be removed on a monthly basis. Please create your own account for more persistent analyses. 
+        </p>
+
+        <!-- Change /upload-target to your upload address -->
+        <form action="/upload-target" class="dropzone"></form>
+        <button onclick="myFunction()">Analyze Files</button>
+    </div>
+
+
+
+    <script>
+        function myFunction() {
+            $.ajax({
+            url: '/analyze',
+            type: 'POST',
+            success: function(response) {
+                remote_url = "https://gnps.ucsd.edu/ProteoSAFe/status.jsp?task=" + response
+                console.log(remote_url)
+                window.location.assign(remote_url);
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+
+        }
+    </script>
+</body>
+
+</html>
