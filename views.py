@@ -20,16 +20,17 @@ ALLOWED_EXTENSIONS = set(['mgf', 'mzxml', 'mzml'])
 def homepage():
     response = make_response(render_template('dashboard.html'))
     response.set_cookie('username', str(uuid.uuid4()))
+    response.set_cookie('selectedFiles', "False")
     return response
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@app.route('/upload-target', methods=['POST'])
-def upload():
-    #TODO: Check too big files
 
+def upload_single_file(request, group):
     username = request.cookies.get('username')
+
+    filename = ""
 
     if 'file' not in request.files:
         return "{}"
@@ -38,17 +39,50 @@ def upload():
         return "{}"
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
-        save_dir = os.path.join(app.config['UPLOAD_FOLDER'], username)
+        save_dir = os.path.join(app.config['UPLOAD_FOLDER'], username, group)
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
-        file.save(os.path.join(save_dir, filename))
+        local_filename = os.path.join(save_dir, filename)
+        file.save(local_filename)
+
+        #Uploading to FTP
+        upload_to_gnps(local_filename, username, group)
+
+        #Remove local file
+        os.remove(local_filename)
     else:
         print("not allowed")
         return "ERROR"
 
-    return "filename"
+    return json.dumps({"filename": filename})
 
-def upload_to_gnps(input_filename, folder_for_spectra):
+@app.route('/upload1', methods=['POST'])
+def upload_1():
+    upload_string = upload_single_file(request, "G1")
+    response = make_response(render_template('dashboard.html'))
+    response.set_cookie('selectedFiles', "True")
+
+    return response
+
+@app.route('/upload2', methods=['POST'])
+def upload_2():
+    upload_string = upload_single_file(request, "G2")
+    response = make_response(render_template('dashboard.html'))
+    response.set_cookie('selectedFiles', "True")
+
+    return response
+
+@app.route('/upload3', methods=['POST'])
+def upload_3():
+    upload_string = upload_single_file(request, "G3")
+    response = make_response(render_template('dashboard.html'))
+    response.set_cookie('selectedFiles', "True")
+
+    return response
+
+
+
+def upload_to_gnps(input_filename, folder_for_spectra, group_name):
     url = "ccms-ftp01.ucsd.edu"
 
     with ftputil.FTPHost(url, credentials.USERNAME, credentials.PASSWORD) as ftp_host:
@@ -58,34 +92,39 @@ def upload_to_gnps(input_filename, folder_for_spectra):
             ftp_host.mkdir(folder_for_spectra)
 
         ftp_host.chdir(folder_for_spectra)
+        if not group_name in ftp_host.listdir(ftp_host.curdir):
+            print("MAKING Group DIR")
+            ftp_host.mkdir(group_name)
+        ftp_host.chdir(group_name)
+
         ftp_host.upload(input_filename, os.path.basename(input_filename))
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
     username = request.cookies.get('username')
+    if request.cookies.get('selectedFiles') == "False":
+        content = {'status': 'No Files Selected'}
+        return json.dumps(content), 417
+
+
     spectra_folder = os.path.join(app.config['UPLOAD_FOLDER'], username)
 
-    files_to_analyze = glob.glob(spectra_folder + "/*")
-
-    if len(files_to_analyze) > 5:
-        return ""
-
-    for input_file in files_to_analyze:
-        upload_to_gnps(input_file, username)
-
     remote_dir = os.path.join("quickstart_GNPS", username)
-    task_id = launch_GNPS_workflow(remote_dir, "Analyzing Test Data", credentials.USERNAME, credentials.PASSWORD)
+    task_id = launch_GNPS_workflow(remote_dir, "GNPS Quickstart Molecular Networking Analysis ", credentials.USERNAME, credentials.PASSWORD)
 
-    return task_id
+    content = {'status': 'Success', 'task_id': task_id}
+    return json.dumps(content), 200
 
 
 def launch_GNPS_workflow(ftp_path, job_description, username, password):
     invokeParameters = {}
     invokeParameters["workflow"] = "METABOLOMICS-SNETS"
     invokeParameters["protocol"] = "None"
-    invokeParameters["desc"] = "Qiita Clustering Job " + job_description
+    invokeParameters["desc"] = job_description
     invokeParameters["library_on_server"] = "d.speclibs;"
-    invokeParameters["spec_on_server"] = "d." + ftp_path + ";"
+    invokeParameters["spec_on_server"] = "d." + ftp_path + "/G1;"
+    invokeParameters["spec_on_server_group2"] = "d." + ftp_path + "/G2;"
+    invokeParameters["spec_on_server_group3"] = "d." + ftp_path + "/G3;"
     invokeParameters["tolerance.PM_tolerance"] = "2.0"
     invokeParameters["tolerance.Ion_tolerance"] = "0.5"
     invokeParameters["PAIRS_MIN_COSINE"] = "0.70"

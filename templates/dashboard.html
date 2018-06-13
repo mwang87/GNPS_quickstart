@@ -17,6 +17,13 @@
     <script src="https://rawgit.com/enyo/dropzone/master/dist/dropzone.js"></script>
     <link rel="stylesheet" href="https://rawgit.com/enyo/dropzone/master/dist/dropzone.css">
 
+    <style>
+        .dropzone { border: 2px dashed #0087F7; border-radius: 5px; background: white; margin: 20px}
+        .dropzone .dz-message { font-weight: 400; }
+        .dropzone .dz-message .note { font-size: 0.8em; font-weight: 200; display: block; margin-top: 1.4rem; }
+        .container-fluid { min-height: 100%; height: 100%;}
+    </style>
+
 </head>
 
 <body>
@@ -40,29 +47,82 @@
 
 
     <div>
-        <p>
-          Drag and drop mzXML/mzML files here to quickly run a molecular network. It is limited to 5 maximum spectrum files with each file limited to 200MB. Data uploaded will be removed on a monthly basis. Please create your own account for more persistent analyses. 
-        </p>
 
-        <!-- Change /upload-target to your upload address -->
-        <form action="/upload-target" class="dropzone"></form>
-        <button onclick="myFunction()">Analyze Files</button>
+
+        <div class="container-fluid">
+            <br>
+            <br>
+            <div class="row">
+              <div class="col-sm"></div>
+              <div class="col-sm text-center">
+                  <h2>GNPS Analysis, Superquick Start</h2>
+              </div>
+              <div class="col-sm"></div>
+            </div>
+
+            <br>
+            <div class="row">
+              <div class="col-sm"></div>
+              <div class="col-sm">
+                      <p>
+                        Drag and drop mzXML/mzML files here to quickly run a molecular network with up to 3 cohorts of samples. It is limited to 50 maximum spectrum files with each file limited to 200MB. Data uploaded will be removed on a monthly basis. Please create your own account for more persistent analyses.
+                        <br>
+                        <br>
+                        NOTE: This interface is meant to process a small cohort of samples. If your internet is slow/unstable, we recommend the traditional method of uploading/running (see Documentation).
+                      </p>
+              </div>
+              <div class="col-sm"></div>
+            </div>
+
+            <br>
+
+            <div class="row">
+              <div class="col-sm"></div>
+              <div class="col-sm">
+                  <div class="text-center" >
+                      <button class="btn btn-primary" onclick="myFunction()">Analyze Uploaded Files with GNPS Molecular Networking</button>
+                  </div>
+              </div>
+              <div class="col-sm"></div>
+            </div>
+
+            <div class="row">
+                <div class="dropzone col-md" id="group1">
+                    <div class="dz-message">Drop files here or click to upload to Cohort Group 1 <br> (Files Required)
+                    </div>
+                </div>
+                <div class="dropzone col-md" id="group2">
+                    <div class="dz-message">Drop files here or click to upload to Cohort Group 2
+                    </div>
+                </div>
+                <div class="dropzone col-md" id="group3">
+                    <div class="dz-message">Drop files here or click to upload to Cohort Group 3
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
 
 
     <script>
+        group1dropzone = new Dropzone("#group1", { url: "/upload1", maxFilesize: 200, parallelUploads:1});
+        group2dropzone = new Dropzone("#group2", { url: "/upload2", maxFilesize: 200, parallelUploads:1});
+        group3dropzone = new Dropzone("#group3", { url: "/upload3", maxFilesize: 200, parallelUploads:1});
+
+
         function myFunction() {
             $.ajax({
             url: '/analyze',
             type: 'POST',
+            dataType: "json",
             success: function(response) {
-                remote_url = "https://gnps.ucsd.edu/ProteoSAFe/status.jsp?task=" + response
-                console.log(remote_url)
+                remote_url = "https://gnps.ucsd.edu/ProteoSAFe/status.jsp?task=" + response["task_id"]
                 window.location.assign(remote_url);
             },
             error: function(error) {
-                console.log(error);
+                alert(error["responseJSON"]["status"])
             }
         });
 
