@@ -144,7 +144,7 @@ def analyze():
 
 def launch_GNPS_workflow(ftp_path, job_description, username, password, groups_present):
     invokeParameters = {}
-    invokeParameters["workflow"] = "METABOLOMICS-SNETS"
+    invokeParameters["workflow"] = "METABOLOMICS-SNETS-V2"
     invokeParameters["protocol"] = "None"
     invokeParameters["desc"] = job_description
     invokeParameters["library_on_server"] = "d.speclibs;"
