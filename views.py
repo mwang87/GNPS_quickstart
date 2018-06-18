@@ -126,6 +126,9 @@ def upload_to_gnps(input_filename, folder_for_spectra, group_name):
 @app.route('/analyze', methods=['POST'])
 def analyze():
     username = request.cookies.get('username')
+    email = request.form["email"]
+    if len(email) < 1 or len(email) > 100:
+        email = "ccms.web@gmail.com"
 
     present_folders = check_ftp_folders(username)
 
@@ -136,13 +139,13 @@ def analyze():
     spectra_folder = os.path.join(app.config['UPLOAD_FOLDER'], username)
 
     remote_dir = os.path.join("quickstart_GNPS", username)
-    task_id = launch_GNPS_workflow(remote_dir, "GNPS Quickstart Molecular Networking Analysis ", credentials.USERNAME, credentials.PASSWORD, present_folders)
+    task_id = launch_GNPS_workflow(remote_dir, "GNPS Quickstart Molecular Networking Analysis ", credentials.USERNAME, credentials.PASSWORD, present_folders, email)
 
     content = {'status': 'Success', 'task_id': task_id}
     return json.dumps(content), 200
 
 
-def launch_GNPS_workflow(ftp_path, job_description, username, password, groups_present):
+def launch_GNPS_workflow(ftp_path, job_description, username, password, groups_present, email):
     invokeParameters = {}
     invokeParameters["workflow"] = "METABOLOMICS-SNETS-V2"
     invokeParameters["protocol"] = "None"
@@ -172,7 +175,7 @@ def launch_GNPS_workflow(ftp_path, job_description, username, password, groups_p
     invokeParameters["WINDOW_FILTER"] = "1"
     invokeParameters["CREATE_CLUSTER_BUCKETS"] = "1"
     invokeParameters["CREATE_ILI_OUTPUT"] = "0"
-    invokeParameters["email"] = "mwang87@gmail.com"
+    invokeParameters["email"] = email
     invokeParameters["uuid"] = "1DCE40F7-1211-0001-979D-15DAB2D0B500"
 
     task_id = invoke_workflow("gnps.ucsd.edu", invokeParameters, username, password)
