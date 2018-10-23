@@ -1,5 +1,13 @@
 
-ALLOWED_EXTENSIONS = set(['mgf', 'mzxml', 'mzml'])
+import os
+from app import app
+import ftputil
+import credentials
+import json
+import requests
+from werkzeug.utils import secure_filename
+
+ALLOWED_EXTENSIONS = set(['mgf', 'mzxml', 'mzml', 'csv', 'txt'])
 
 
 def allowed_file(filename):
@@ -47,12 +55,7 @@ def check_ftp_folders(username):
 
         ftp_host.chdir(username)
 
-        if "G1" in ftp_host.listdir(ftp_host.curdir):
-            present_folders.append("G1")
-        if "G2" in ftp_host.listdir(ftp_host.curdir):
-            present_folders.append("G2")
-        if "G3" in ftp_host.listdir(ftp_host.curdir):
-            present_folders.append("G3")
+        return ftp_host.listdir(ftp_host.curdir)
 
     return present_folders
 
@@ -111,6 +114,52 @@ def launch_GNPS_workflow(ftp_path, job_description, username, password, groups_p
     invokeParameters["WINDOW_FILTER"] = "1"
     invokeParameters["CREATE_CLUSTER_BUCKETS"] = "1"
     invokeParameters["CREATE_ILI_OUTPUT"] = "0"
+    invokeParameters["email"] = email
+    invokeParameters["uuid"] = "1DCE40F7-1211-0001-979D-15DAB2D0B500"
+
+    task_id = invoke_workflow("gnps.ucsd.edu", invokeParameters, username, password)
+
+    return task_id
+
+def launch_GNPS_featurenetworking_workflow(ftp_path, job_description, username, password, email, featuretool):
+    invokeParameters = {}
+    invokeParameters["workflow"] = "FEATURE-BASED-MOLECULAR-NETWORKING"
+    invokeParameters["protocol"] = "None"
+    invokeParameters["desc"] = job_description
+    invokeParameters["library_on_server"] = "d.speclibs;"
+
+    invokeParameters["quantification_table"] = "d." + ftp_path + "/featurequantification;"
+    invokeParameters["spec_on_server"] = "d." + ftp_path + "/featurems2;"
+    invokeParameters["metadata_table"] = "d." + ftp_path + "/samplemetadata;"
+
+    #Networking
+    invokeParameters["tolerance.PM_tolerance"] = "2.0"
+    invokeParameters["tolerance.Ion_tolerance"] = "0.5"
+    invokeParameters["PAIRS_MIN_COSINE"] = "0.70"
+    invokeParameters["MIN_MATCHED_PEAKS"] = "6"
+    invokeParameters["TOPK"] = "10"
+    invokeParameters["MAX_SHIFT"] = "500"
+
+    #Network Pruning
+    invokeParameters["MAXIMUM_COMPONENT_SIZE"] = "100"
+
+    #Library Search
+    invokeParameters["MIN_MATCHED_PEAKS_SEARCH"] = "6"
+    invokeParameters["SCORE_THRESHOLD"] = "0.7"
+    invokeParameters["TOP_K_RESULTS"] = "1"
+    invokeParameters["ANALOG_SEARCH"] = "0"
+    invokeParameters["MAX_SHIFT_MASS"] = "100.0"
+    invokeParameters["FILTER_STDDEV_PEAK_datasetsINT"] = "0.0"
+    invokeParameters["MIN_PEAK_INT"] = "0.0"
+    invokeParameters["FILTER_PRECURSOR_WINDOW"] = "1"
+    invokeParameters["FILTER_LIBRARY"] = "1"
+    invokeParameters["WINDOW_FILTER"] = "1"
+
+    #Quant
+    invokeParameters["QUANT_TABLE_SOURCE"] = featuretool
+    invokeParameters["GROUP_COUNT_AGGREGATE_METHOD"] = "Mean"
+    invokeParameters["QUANT_FILE_NORM"] = "RowSum"
+
     invokeParameters["email"] = email
     invokeParameters["uuid"] = "1DCE40F7-1211-0001-979D-15DAB2D0B500"
 

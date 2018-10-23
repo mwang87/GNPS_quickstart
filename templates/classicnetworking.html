@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>GNPS Class Molecular Networking, Superquick Start</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
+
+
+
+    <!--
+      DO NOT SIMPLY COPY THOSE LINES. Download the JS and CSS files from the
+      latest release (https://github.com/enyo/dropzone/releases/latest), and
+      host them yourself!
+    -->
+    <script src="https://rawgit.com/enyo/dropzone/master/dist/dropzone.js"></script>
+    <link rel="stylesheet" href="https://rawgit.com/enyo/dropzone/master/dist/dropzone.css">
+
+    <style>
+        .dropzone { border: 2px dashed #0087F7; border-radius: 5px; background: white; margin: 20px}
+        .dropzone .dz-message { font-weight: 400; }
+        .dropzone .dz-message .note { font-size: 0.8em; font-weight: 200; display: block; margin-top: 1.4rem; }
+        .container-fluid { min-height: 100%; height: 100%;}
+
+
+    </style>
+
+</head>
+
+<body>
+    <!-- A grey horizontal navbar that becomes vertical on small screens -->
+    <nav class="navbar navbar-expand-sm bg-light navbar-light">
+        <a class="navbar-brand" href="https://gnps.ucsd.edu">
+            <img src="static/img/GNPS_logo.png" alt="Logo" style="width:120px;">
+        </a>
+
+      <!-- Links -->
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Classic Networking</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/featurebasednetworking">Feature Based Networking</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://ccms-ucsd.github.io/GNPSDocumentation/superquickstart/">Documentation</a>
+        </li>
+      </ul>
+
+    </nav>
+
+
+    <div>
+
+
+        <div class="container-fluid">
+            <br>
+            <br>
+            <div class="row">
+              <div class="col-sm"></div>
+              <div class="col-sm text-center">
+                  <h2>GNPS Analysis, Superquick Start</h2>
+              </div>
+              <div class="col-sm"></div>
+            </div>
+
+            <br>
+            <div class="row">
+              <div class="col-sm"></div>
+              <div class="col-sm">
+                      <p>
+                        Drag and drop mzXML/mzML files here to quickly run a molecular network with up to 3 cohorts of samples. It is limited to 50 maximum spectrum files with each file limited to 200MB. Data uploaded will be removed on a monthly basis. Please create your own account for more persistent analyses.
+                        <br>
+                        <br>
+                        NOTE: This interface is meant to process a small cohort of samples. If your internet is slow/unstable, we recommend the traditional method of uploading/running (see Documentation).
+                      </p>
+              </div>
+              <div class="col-sm"></div>
+            </div>
+
+            <br>
+
+            <div class="row">
+              <div class="col-sm"></div>
+              <div class="col-sm">
+                  <div class="text-center" >
+                      <input type="text" class="form-control" name="email" id="email" placeholder="Enter Your Email for Notification on Completion">
+                      <br>
+                      <button id="analyzebutton" class="btn btn-primary" onclick="analyzeNetworing()" >Analyze Uploaded Files with GNPS Molecular Networking </button>
+                        <!-- <button class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'>" onclick="myFunction()">Analyze Uploaded Files with GNPS Molecular Networking</button> -->
+                  </div>
+              </div>
+              <div class="col-sm"></div>
+            </div>
+
+            <div class="row">
+                <div class="dropzone col-md" id="group1">
+                    <div class="dz-message">Drop files here or click to upload to Cohort Group 1 <br> (Files Required)
+                    </div>
+                </div>
+                <div class="dropzone col-md" id="group2">
+                    <div class="dz-message">Drop files here or click to upload to Cohort Group 2
+                    </div>
+                </div>
+                <div class="dropzone col-md" id="group3">
+                    <div class="dz-message">Drop files here or click to upload to Cohort Group 3
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <script>
+        group1dropzone = new Dropzone("#group1", { url: "upload1", maxFilesize: 200, parallelUploads:1});
+        group2dropzone = new Dropzone("#group2", { url: "upload2", maxFilesize: 200, parallelUploads:1});
+        group3dropzone = new Dropzone("#group3", { url: "upload3", maxFilesize: 200, parallelUploads:1});
+
+        function analyzeNetworing() {
+            $("#analyzebutton").html("<i class='fa fa-spinner fa-spin '></i> Processing")
+
+            email = $("#email").val()
+
+            $.ajax({
+            url: 'analyze',
+            type: 'POST',
+            data: {"email": email},
+            dataType: "json",
+            success: function(response) {
+                remote_url = "https://gnps.ucsd.edu/ProteoSAFe/status.jsp?task=" + response["task_id"]
+                window.location.assign(remote_url);
+            },
+            error: function(error) {
+                alert(error["responseJSON"]["status"])
+                $("#analyzebutton").html("Analyze Uploaded Files with GNPS Molecular Networking")
+            }
+        });
+
+        }
+    </script>
+</body>
+
+</html>
