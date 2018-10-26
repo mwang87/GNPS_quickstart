@@ -161,7 +161,7 @@ def launch_GNPS_featurenetworking_workflow(ftp_path, job_description, username, 
     invokeParameters["QUANT_FILE_NORM"] = "RowSum"
 
     #External tools
-    invokeParameters["RUN_DERPLICATOR"] = "1"
+    invokeParameters["RUN_DEREPLICATOR"] = "1"
 
     invokeParameters["email"] = email
     invokeParameters["uuid"] = "1DCE40F7-1211-0001-979D-15DAB2D0B500"
