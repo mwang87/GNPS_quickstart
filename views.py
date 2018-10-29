@@ -140,7 +140,7 @@ def analyzefeaturenetworking():
         content = {'status': 'Error'}
         return json.dumps(content), 500
 
-    content = {'status': 'Success', 'task_id': task_id, 'url': "https://gnps.ucsd.edu/ProteoSAFe/status.jsp?task=" % (task_id)}
+    content = {'status': 'Success', 'task_id': task_id, 'url': "https://gnps.ucsd.edu/ProteoSAFe/status.jsp?task=%s" % (task_id)}
     return json.dumps(content), 200
 
 @app.route('/uploadanalyzefeaturenetworking', methods=['POST'])
@@ -181,5 +181,5 @@ def uploadanalyzefeaturenetworking():
         content = {'status': 'Error'}
         return json.dumps(content), 500
 
-    content = {'status': 'Success', 'task_id': task_id, 'url': "https://gnps.ucsd.edu/ProteoSAFe/status.jsp?task=" % (task_id)}
+    content = {'status': 'Success', 'task_id': task_id, 'url': "https://gnps.ucsd.edu/ProteoSAFe/status.jsp?task=%s" % (task_id)}
     return json.dumps(content), 200
