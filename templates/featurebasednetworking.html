@@ -133,20 +133,24 @@
                     </div>
                 </div>
                 <div class="dropzone col-md" id="samplemetadata">
-                    <div class="dz-message">Drop file here to upload sample metdata file <br> (Files Required)
+                    <div class="dz-message">Drop file here to upload sample metdata file <br> (Optional)
+                    </div>
+                </div>
+                <div class="dropzone col-md" id="additionalpairs">
+                    <div class="dz-message">Drop file here to upload additional pairs to be included in the network <br> (Optional)
                     </div>
                 </div>
             </div>
-
         </div>
 
     </div>
 
 
     <script>
-        group1dropzone = new Dropzone("#featurequantification", { url: "featurequantification", maxFilesize: 200, parallelUploads:1});
-        group2dropzone = new Dropzone("#featurems2", { url: "featurems2", maxFilesize: 200, parallelUploads:1});
-        group3dropzone = new Dropzone("#samplemetadata", { url: "samplemetadata", maxFilesize: 200, parallelUploads:1});
+        featurequantification_dropzone = new Dropzone("#featurequantification", { url: "featurequantification", maxFilesize: 200, parallelUploads:1});
+        featurems2_dropzone = new Dropzone("#featurems2", { url: "featurems2", maxFilesize: 200, parallelUploads:1});
+        samplemetadata_dropzone = new Dropzone("#samplemetadata", { url: "samplemetadata", maxFilesize: 200, parallelUploads:1});
+        additionalpairs_dropzone = new Dropzone("#additionalpairs", { url: "additionalpairs", maxFilesize: 200, parallelUploads:1});
 
         function analyzeButton() {
             $("#analyzebutton").html("<i class='fa fa-spinner fa-spin '></i> Processing")

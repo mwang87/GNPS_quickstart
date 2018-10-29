@@ -78,6 +78,7 @@ def featurebasednetworking():
     response.set_cookie('featurequantification', "False")
     response.set_cookie('featurems2', "False")
     response.set_cookie('samplemetadata', "False")
+    response.set_cookie('additionalpairs', "False")
 
     return response
 
@@ -105,6 +106,14 @@ def samplemetadata():
 
     return response
 
+@app.route('/additionalpairs', methods=['POST'])
+def additionalpairs():
+    upload_string = util.upload_single_file(request, "additionalpairs")
+    response = make_response()
+    response.set_cookie('additionalpairs', "True")
+
+    return response
+
 @app.route('/analyzefeaturenetworking', methods=['POST'])
 def analyzefeaturenetworking():
     username = request.cookies.get('username')
@@ -124,7 +133,53 @@ def analyzefeaturenetworking():
         return json.dumps(present_folders), 417
 
     remote_dir = os.path.join(credentials.USERNAME, username)
-    task_id = util.launch_GNPS_featurenetworking_workflow(remote_dir, "GNPS Quickstart Molecular Networking Analysis ", credentials.USERNAME, credentials.PASSWORD, email, featuretool)
+    task_id = util.launch_GNPS_featurenetworking_workflow(remote_dir, "GNPS Quickstart Molecular Networking Analysis ", credentials.USERNAME, credentials.PASSWORD, email, featuretool, present_folders)
 
-    content = {'status': 'Success', 'task_id': task_id}
+    #Error
+    if len(task_id) != 32:
+        content = {'status': 'Error'}
+        return json.dumps(content), 500
+
+    content = {'status': 'Success', 'task_id': task_id, 'url': "https://gnps.ucsd.edu/ProteoSAFe/status.jsp?task=" % (task_id)}
+    return json.dumps(content), 200
+
+@app.route('/uploadanalyzefeaturenetworking', methods=['POST'])
+def uploadanalyzefeaturenetworking():
+    username = str(uuid.uuid4())
+    upload_string = util.upload_single_file(request, "featurequantification")
+
+    #Performing Data Upload
+    util.upload_single_file_push(request.files["featurequantification"], username, "featurequantification")
+    util.upload_single_file_push(request.files["featurems2"], username, "featurems2")
+
+    if "samplemetadata" in request.files:
+        util.upload_single_file_push(request.files["samplemetadata"], username, "samplemetadata")
+
+    if "additionalpairs" in request.files:
+        util.upload_single_file_push(request.files["additionalpairs"], username, "additionalpairs")
+
+    email = request.form["email"]
+    featuretool = request.form["featuretool"]
+    if len(email) < 1 or len(email) > 100:
+        email = "ccms.web@gmail.com"
+
+    present_folders = util.check_ftp_folders(username)
+
+    if not "featurequantification" in present_folders:
+        content = {'status': 'featurequantification required but not selected'}
+        return json.dumps(present_folders), 417
+
+    if not "featurems2" in present_folders:
+        content = {'status': 'featurems2 required but not selected'}
+        return json.dumps(present_folders), 417
+
+    remote_dir = os.path.join(credentials.USERNAME, username)
+    task_id = util.launch_GNPS_featurenetworking_workflow(remote_dir, "GNPS Quickstart Molecular Networking Analysis ", credentials.USERNAME, credentials.PASSWORD, email, featuretool, present_folders)
+
+    #Error
+    if len(task_id) != 32:
+        content = {'status': 'Error'}
+        return json.dumps(content), 500
+
+    content = {'status': 'Success', 'task_id': task_id, 'url': "https://gnps.ucsd.edu/ProteoSAFe/status.jsp?task=" % (task_id)}
     return json.dumps(content), 200

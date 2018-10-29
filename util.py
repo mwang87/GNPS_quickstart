@@ -21,25 +21,29 @@ def upload_single_file(request, group):
 
     if 'file' not in request.files:
         return "{}"
-    file = request.files['file']
-    if file.filename == '':
+    request_file = request.files['file']
+
+    return upload_single_file_push(request_file, username, group)
+
+def upload_single_file_push(request_file, uuid_folder, collection_name):
+    if request_file.filename == '':
         return "{}"
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        save_dir = os.path.join(app.config['UPLOAD_FOLDER'], username, group)
+    if request_file and allowed_file(request_file.filename):
+        filename = secure_filename(request_file.filename)
+        save_dir = os.path.join(app.config['UPLOAD_FOLDER'], uuid_folder, collection_name)
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
         local_filename = os.path.join(save_dir, filename)
-        file.save(local_filename)
+        request_file.save(local_filename)
 
         #Uploading to FTP
-        upload_to_gnps(local_filename, username, group)
+        upload_to_gnps(local_filename, uuid_folder, collection_name)
 
         #Remove local file
         os.remove(local_filename)
     else:
         print("not allowed")
-        return "ERROR"
+        json.dumps({"status": "Invalid File Type"})
 
     return json.dumps({"filename": filename})
 
@@ -121,7 +125,7 @@ def launch_GNPS_workflow(ftp_path, job_description, username, password, groups_p
 
     return task_id
 
-def launch_GNPS_featurenetworking_workflow(ftp_path, job_description, username, password, email, featuretool):
+def launch_GNPS_featurenetworking_workflow(ftp_path, job_description, username, password, email, featuretool, present_folders):
     invokeParameters = {}
     invokeParameters["workflow"] = "FEATURE-BASED-MOLECULAR-NETWORKING"
     invokeParameters["protocol"] = "None"
@@ -130,7 +134,8 @@ def launch_GNPS_featurenetworking_workflow(ftp_path, job_description, username, 
 
     invokeParameters["quantification_table"] = "d." + ftp_path + "/featurequantification;"
     invokeParameters["spec_on_server"] = "d." + ftp_path + "/featurems2;"
-    invokeParameters["metadata_table"] = "d." + ftp_path + "/samplemetadata;"
+    if "samplemetadata" in present_folders:
+        invokeParameters["metadata_table"] = "d." + ftp_path + "/samplemetadata;"
 
     #Networking
     invokeParameters["tolerance.PM_tolerance"] = "2.0"
@@ -159,6 +164,11 @@ def launch_GNPS_featurenetworking_workflow(ftp_path, job_description, username, 
     invokeParameters["QUANT_TABLE_SOURCE"] = featuretool
     invokeParameters["GROUP_COUNT_AGGREGATE_METHOD"] = "Mean"
     invokeParameters["QUANT_FILE_NORM"] = "RowSum"
+
+    #Additional Pairs
+    if "additionalpairs" in present_folders:
+        invokeParameters["additional_pairs"] = "d." + ftp_path + "/additionalpairs;"
+
 
     #External tools
     invokeParameters["RUN_DEREPLICATOR"] = "1"
