@@ -118,6 +118,7 @@ def additionalpairs():
 def analyzefeaturenetworking():
     username = request.cookies.get('username')
     email = request.form["email"]
+    networkingpreset = request.form["networkingpreset"]
     featuretool = request.form["featuretool"]
     if len(email) < 1 or len(email) > 100:
         email = "ccms.web@gmail.com"
@@ -133,7 +134,7 @@ def analyzefeaturenetworking():
         return json.dumps(present_folders), 417
 
     remote_dir = os.path.join(credentials.USERNAME, username)
-    task_id = util.launch_GNPS_featurenetworking_workflow(remote_dir, "GNPS Quickstart Molecular Networking Analysis ", credentials.USERNAME, credentials.PASSWORD, email, featuretool, present_folders)
+    task_id = util.launch_GNPS_featurenetworking_workflow(remote_dir, "GNPS Quickstart Molecular Networking Analysis ", credentials.USERNAME, credentials.PASSWORD, email, featuretool, present_folders, networkingpreset)
 
     #Error
     if len(task_id) != 32:
@@ -147,6 +148,11 @@ def analyzefeaturenetworking():
 def uploadanalyzefeaturenetworking():
     username = str(uuid.uuid4())
     upload_string = util.upload_single_file(request, "featurequantification")
+
+    networkingpreset = "LOWRES"
+    if "networkingpreset" in request.form:
+        networkingpreset = request.form["networkingpreset"]
+
 
     #Performing Data Upload
     util.upload_single_file_push(request.files["featurequantification"], username, "featurequantification")
@@ -174,7 +180,7 @@ def uploadanalyzefeaturenetworking():
         return json.dumps(present_folders), 417
 
     remote_dir = os.path.join(credentials.USERNAME, username)
-    task_id = util.launch_GNPS_featurenetworking_workflow(remote_dir, "GNPS Quickstart Molecular Networking Analysis ", credentials.USERNAME, credentials.PASSWORD, email, featuretool, present_folders)
+    task_id = util.launch_GNPS_featurenetworking_workflow(remote_dir, "GNPS Quickstart Molecular Networking Analysis ", credentials.USERNAME, credentials.PASSWORD, email, featuretool, present_folders, networkingpreset)
 
     #Error
     if len(task_id) != 32:

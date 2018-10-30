@@ -125,17 +125,43 @@ def launch_GNPS_workflow(ftp_path, job_description, username, password, groups_p
 
     return task_id
 
-def launch_GNPS_featurenetworking_workflow(ftp_path, job_description, username, password, email, featuretool, present_folders):
+def launch_GNPS_featurenetworking_workflow(ftp_path, job_description, username, password, email, featuretool, present_folders, preset):
     invokeParameters = {}
-    invokeParameters["workflow"] = "FEATURE-BASED-MOLECULAR-NETWORKING"
-    invokeParameters["protocol"] = "None"
+
+    if preset == "LOWRES":
+        invokeParameters = get_featurenetworking_lowres_parameters()
+    elif preset == "HIGHRES":
+        invokeParameters = get_featurenetworking_highres_parameters()
+    else:
+        return "Error No Preset"
+
+    #Specific Parameters Update
     invokeParameters["desc"] = job_description
-    invokeParameters["library_on_server"] = "d.speclibs;"
 
     invokeParameters["quantification_table"] = "d." + ftp_path + "/featurequantification;"
     invokeParameters["spec_on_server"] = "d." + ftp_path + "/featurems2;"
     if "samplemetadata" in present_folders:
         invokeParameters["metadata_table"] = "d." + ftp_path + "/samplemetadata;"
+
+    #Quant
+    invokeParameters["QUANT_TABLE_SOURCE"] = featuretool
+
+    #Additional Pairs
+    if "additionalpairs" in present_folders:
+        invokeParameters["additional_pairs"] = "d." + ftp_path + "/additionalpairs;"
+
+    invokeParameters["email"] = email
+
+    task_id = invoke_workflow("gnps.ucsd.edu", invokeParameters, username, password)
+
+    return task_id
+
+def get_featurenetworking_lowres_parameters():
+    invokeParameters = {}
+    invokeParameters["workflow"] = "FEATURE-BASED-MOLECULAR-NETWORKING"
+    invokeParameters["protocol"] = "None"
+    invokeParameters["desc"] = "Job Description"
+    invokeParameters["library_on_server"] = "d.speclibs;"
 
     #Networking
     invokeParameters["tolerance.PM_tolerance"] = "2.0"
@@ -161,24 +187,61 @@ def launch_GNPS_featurenetworking_workflow(ftp_path, job_description, username, 
     invokeParameters["WINDOW_FILTER"] = "1"
 
     #Quant
-    invokeParameters["QUANT_TABLE_SOURCE"] = featuretool
+    invokeParameters["QUANT_TABLE_SOURCE"] = ""
     invokeParameters["GROUP_COUNT_AGGREGATE_METHOD"] = "Mean"
     invokeParameters["QUANT_FILE_NORM"] = "RowSum"
-
-    #Additional Pairs
-    if "additionalpairs" in present_folders:
-        invokeParameters["additional_pairs"] = "d." + ftp_path + "/additionalpairs;"
-
 
     #External tools
     invokeParameters["RUN_DEREPLICATOR"] = "1"
 
-    invokeParameters["email"] = email
+    invokeParameters["email"] = "ccms.web@gmail.com"
     invokeParameters["uuid"] = "1DCE40F7-1211-0001-979D-15DAB2D0B500"
 
-    task_id = invoke_workflow("gnps.ucsd.edu", invokeParameters, username, password)
+    return invokeParameters
 
-    return task_id
+def get_featurenetworking_highres_parameters():
+    invokeParameters = {}
+    invokeParameters["workflow"] = "FEATURE-BASED-MOLECULAR-NETWORKING"
+    invokeParameters["protocol"] = "None"
+    invokeParameters["desc"] = "Job Description"
+    invokeParameters["library_on_server"] = "d.speclibs;"
+
+    #Networking
+    invokeParameters["tolerance.PM_tolerance"] = "0.05"
+    invokeParameters["tolerance.Ion_tolerance"] = "0.05"
+    invokeParameters["PAIRS_MIN_COSINE"] = "0.70"
+    invokeParameters["MIN_MATCHED_PEAKS"] = "6"
+    invokeParameters["TOPK"] = "10"
+    invokeParameters["MAX_SHIFT"] = "500"
+
+    #Network Pruning
+    invokeParameters["MAXIMUM_COMPONENT_SIZE"] = "100"
+
+    #Library Search
+    invokeParameters["MIN_MATCHED_PEAKS_SEARCH"] = "6"
+    invokeParameters["SCORE_THRESHOLD"] = "0.7"
+    invokeParameters["TOP_K_RESULTS"] = "1"
+    invokeParameters["ANALOG_SEARCH"] = "0"
+    invokeParameters["MAX_SHIFT_MASS"] = "100.0"
+    invokeParameters["FILTER_STDDEV_PEAK_datasetsINT"] = "0.0"
+    invokeParameters["MIN_PEAK_INT"] = "0.0"
+    invokeParameters["FILTER_PRECURSOR_WINDOW"] = "1"
+    invokeParameters["FILTER_LIBRARY"] = "1"
+    invokeParameters["WINDOW_FILTER"] = "1"
+
+    #Quant
+    invokeParameters["QUANT_TABLE_SOURCE"] = ""
+    invokeParameters["GROUP_COUNT_AGGREGATE_METHOD"] = "Mean"
+    invokeParameters["QUANT_FILE_NORM"] = "RowSum"
+
+    #External tools
+    invokeParameters["RUN_DEREPLICATOR"] = "1"
+
+    invokeParameters["email"] = "ccms.web@gmail.com"
+    invokeParameters["uuid"] = "1DCE40F7-1211-0001-979D-15DAB2D0B500"
+
+    return invokeParameters
+
 
 def invoke_workflow(base_url, parameters, login, password):
     username = login

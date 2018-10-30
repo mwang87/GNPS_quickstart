@@ -122,7 +122,15 @@
                         </select>
                     </div>
                 </div>
-                <div class="col-sm"></div>
+                <div class="col-sm">
+                    <div class="form-group">
+                        <label for="exampleFormControlInput2">Networking Parameters Preset</label>
+                        <select class="form-control" name="networkingpreset" id="networkingpreset">
+                            <option value="HIGHRES">High Resolution</option>
+                            <option value="LOWRES">Low Resolution</option>
+                        </select>
+                    </div>
+                </div>
             </div>
 
             <div class="row">
@@ -164,7 +172,7 @@
             $.ajax({
                 url: 'analyzefeaturenetworking',
                 type: 'POST',
-                data: {"email": email, "featuretool": $("#featuretool").val()},
+                data: {"email": email, "featuretool": $("#featuretool").val(), "networkingpreset": $("#networkingpreset").val()},
                 dataType: "json",
                 success: function(response) {
                     remote_url = "https://gnps.ucsd.edu/ProteoSAFe/status.jsp?task=" + response["task_id"]
