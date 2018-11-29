@@ -164,11 +164,15 @@ def uploadanalyzefeaturenetworking():
     if "additionalpairs" in request.files:
         util.upload_single_file_push(request.files["additionalpairs"], username, "additionalpairs")
 
-    email = request.form["email"]
-    featuretool = request.form["featuretool"]
+    email = ""
+    try:
+        email = request.form["email"]
+    except:
+        email = ""
     if len(email) < 1 or len(email) > 100:
         email = "ccms.web@gmail.com"
 
+    featuretool = request.form["featuretool"]
     present_folders = util.check_ftp_folders(username)
 
     if not "featurequantification" in present_folders:
