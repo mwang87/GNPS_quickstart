@@ -56,8 +56,6 @@
 
 
     <div>
-
-
         <div class="container-fluid">
             <br>
             <br>
@@ -90,14 +88,20 @@
               <div class="col-sm"></div>
             </div>
 
-            <br>
+            <hr>
 
             <div class="row">
               <div class="col-sm"></div>
               <div class="col-sm">
                   <div class="text-center" >
+                      <h3> Optional Notification Email </h3>
                       <input type="text" class="form-control" name="email" id="email" placeholder="Enter Your Email for Notification on Completion">
+                      <hr>
+                      <h3> Optional GNPS Login Credentials </h3>
+                      <input type="text" class="form-control" name="username" id="username" placeholder="Enter Your GNPS Username">
                       <br>
+                      <input type="password" class="form-control" name="password" id="password" placeholder="Enter Your GNPS Password">
+                      <hr>
                       <button id="analyzebutton" class="btn btn-primary" onclick="analyzeButton()" >Analyze Uploaded Files with GNPS Featured Based Molecular Networking </button>
                         <!-- <button class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'>" onclick="myFunction()">Analyze Uploaded Files with GNPS Molecular Networking</button> -->
                   </div>
@@ -168,11 +172,13 @@
             $("#analyzebutton").html("<i class='fa fa-spinner fa-spin '></i> Processing")
 
             email = $("#email").val()
+            username = $("#username").val()
+            password = $("#password").val()
 
             $.ajax({
                 url: 'analyzefeaturenetworking',
                 type: 'POST',
-                data: {"email": email, "featuretool": $("#featuretool").val(), "networkingpreset": $("#networkingpreset").val()},
+                data: {"email": email, "username": username, "password": password, "featuretool": $("#featuretool").val(), "networkingpreset": $("#networkingpreset").val()},
                 dataType: "json",
                 success: function(response) {
                     remote_url = "https://gnps.ucsd.edu/ProteoSAFe/status.jsp?task=" + response["task_id"]

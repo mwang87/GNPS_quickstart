@@ -15,7 +15,7 @@ def allowed_file(filename):
 
 
 def upload_single_file(request, group):
-    username = request.cookies.get('username')
+    sessionid = request.cookies.get('sessionid')
 
     filename = ""
 
@@ -23,7 +23,7 @@ def upload_single_file(request, group):
         return "{}"
     request_file = request.files['file']
 
-    return upload_single_file_push(request_file, username, group)
+    return upload_single_file_push(request_file, sessionid, group)
 
 def upload_single_file_push(request_file, uuid_folder, collection_name):
     if request_file.filename == '':
