@@ -24,6 +24,7 @@ def process_localfile(input_filename, save_dir):
     """Perform Conversion"""
     cmd = "mono /src/bin/x64/Debug/ThermoRawFileParser.exe -i=%s -o=%s -f=1" % (input_filename, save_dir)
     os.system(cmd)
+    os.remove(input_filename)
     output_filename = os.path.join(save_dir, os.path.basename(input_filename).replace(".raw", ".mzML"))
     return output_filename
 
