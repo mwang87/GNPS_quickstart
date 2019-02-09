@@ -50,6 +50,7 @@ def upload_3():
 @app.route('/analyze', methods=['POST'])
 def analyze():
     sessionid = request.cookies.get('sessionid')
+    networkingpreset = request.form["networkingpreset"]
     email = request.form["email"]
     if len(email) < 1 or len(email) > 100:
         email = "ccms.web@gmail.com"
@@ -60,8 +61,19 @@ def analyze():
         content = {'status': 'Group 1 files required but not selected'}
         return json.dumps(content), 417
 
+    gnps_username = credentials.USERNAME
+    gnps_password = credentials.PASSWORD
+
+    try:
+        if len(request.form["username"] ) > 3 and len(request.form["password"]):
+            gnps_username = request.form["username"]
+            gnps_password = request.form["password"]
+    except:
+        gnps_username = credentials.USERNAME
+        gnps_password = credentials.PASSWORD
+
     remote_dir = os.path.join(credentials.USERNAME, sessionid)
-    task_id = util.launch_GNPS_workflow(remote_dir, "GNPS Quickstart Molecular Networking Analysis ", credentials.USERNAME, credentials.PASSWORD, present_folders, email)
+    task_id = util.launch_GNPS_workflow(remote_dir, "GNPS Quickstart Molecular Networking Analysis ", gnps_username, gnps_password, present_folders, email, networkingpreset)
 
     content = {'status': 'Success', 'task_id': task_id}
     return json.dumps(content), 200

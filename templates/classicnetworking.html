@@ -64,7 +64,7 @@
             <div class="row">
               <div class="col-sm"></div>
               <div class="col-sm text-center">
-                  <h2>GNPS Analysis, Superquick Start</h2>
+                  <h2>GNPS Classic Moleacular Networking Analysis, Superquick Start</h2>
               </div>
               <div class="col-sm"></div>
             </div>
@@ -83,20 +83,44 @@
               <div class="col-sm"></div>
             </div>
 
-            <br>
+            <hr>
 
             <div class="row">
               <div class="col-sm"></div>
               <div class="col-sm">
                   <div class="text-center" >
+                      <h3> Optional Notification Email </h3>
                       <input type="text" class="form-control" name="email" id="email" placeholder="Enter Your Email for Notification on Completion">
+                      <hr>
+                      <h3> Optional GNPS Login Credentials </h3>
+                      <input type="text" class="form-control" name="username" id="username" placeholder="Enter Your GNPS Username">
                       <br>
-                      <button id="analyzebutton" class="btn btn-primary" onclick="analyzeNetworing()" >Analyze Uploaded Files with GNPS Molecular Networking </button>
-                        <!-- <button class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'>" onclick="myFunction()">Analyze Uploaded Files with GNPS Molecular Networking</button> -->
+                      <input type="password" class="form-control" name="password" id="password" placeholder="Enter Your GNPS Password">
+                      <hr>
+                      <button id="analyzebutton" class="btn btn-primary" onclick="analyzeNetworking()" >Analyze Uploaded Files with GNPS Molecular Networking </button>
                   </div>
               </div>
               <div class="col-sm"></div>
             </div>
+
+            <hr>
+
+            <div class="row">
+                <div class="col-sm"></div>
+                <div class="col-sm">
+                    <div class="form-group">
+                        <label for="exampleFormControlInput2">Networking Parameters Preset</label>
+                        <select class="form-control" name="networkingpreset" id="networkingpreset">
+                            <option value="HIGHRES">High Resolution</option>
+                            <option value="LOWRES">Low Resolution</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm">
+                </div>
+            </div>
+
+            <hr>
 
             <div class="row">
                 <div class="dropzone col-md" id="group1">
@@ -125,20 +149,21 @@
         }
 
 
-
         group1dropzone = new Dropzone("#group1", { url: "upload1", maxFilesize: 200, parallelUploads:1});
         group2dropzone = new Dropzone("#group2", { url: "upload2", maxFilesize: 200, parallelUploads:1});
         group3dropzone = new Dropzone("#group3", { url: "upload3", maxFilesize: 200, parallelUploads:1});
 
-        function analyzeNetworing() {
+        function analyzeNetworking() {
             $("#analyzebutton").html("<i class='fa fa-spinner fa-spin '></i> Processing")
 
             email = $("#email").val()
+            username = $("#username").val()
+            password = $("#password").val()
 
             $.ajax({
             url: 'analyze',
             type: 'POST',
-            data: {"email": email},
+            data: {"email": email, "username": username, "password": password, "networkingpreset": $("#networkingpreset").val()},
             dataType: "json",
             success: function(response) {
                 remote_url = "https://gnps.ucsd.edu/ProteoSAFe/status.jsp?task=" + response["task_id"]

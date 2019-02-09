@@ -87,18 +87,11 @@ def upload_to_gnps(input_filename, folder_for_spectra, group_name):
 
         ftp_host.upload(input_filename, os.path.basename(input_filename))
 
-
-def launch_GNPS_workflow(ftp_path, job_description, username, password, groups_present, email):
+def get_classic_networking_lowres_parameters():
     invokeParameters = {}
     invokeParameters["workflow"] = "METABOLOMICS-SNETS-V2"
     invokeParameters["protocol"] = "None"
-    invokeParameters["desc"] = job_description
     invokeParameters["library_on_server"] = "d.speclibs;"
-    invokeParameters["spec_on_server"] = "d." + ftp_path + "/G1;"
-    if "G2" in groups_present:
-        invokeParameters["spec_on_server_group2"] = "d." + ftp_path + "/G2;"
-    if "G3" in groups_present:
-        invokeParameters["spec_on_server_group3"] = "d." + ftp_path + "/G3;"
     invokeParameters["tolerance.PM_tolerance"] = "2.0"
     invokeParameters["tolerance.Ion_tolerance"] = "0.5"
     invokeParameters["PAIRS_MIN_COSINE"] = "0.70"
@@ -118,8 +111,55 @@ def launch_GNPS_workflow(ftp_path, job_description, username, password, groups_p
     invokeParameters["WINDOW_FILTER"] = "1"
     invokeParameters["CREATE_CLUSTER_BUCKETS"] = "1"
     invokeParameters["CREATE_ILI_OUTPUT"] = "0"
+
+    return invokeParameters
+
+def get_classic_networking_highres_parameters():
+    invokeParameters = {}
+    invokeParameters["workflow"] = "METABOLOMICS-SNETS-V2"
+    invokeParameters["protocol"] = "None"
+    invokeParameters["library_on_server"] = "d.speclibs;"
+    invokeParameters["tolerance.PM_tolerance"] = "0.05"
+    invokeParameters["tolerance.Ion_tolerance"] = "0.05"
+    invokeParameters["PAIRS_MIN_COSINE"] = "0.70"
+    invokeParameters["MIN_MATCHED_PEAKS"] = "6"
+    invokeParameters["TOPK"] = "10"
+    invokeParameters["CLUSTER_MIN_SIZE"] = "2"
+    invokeParameters["RUN_MSCLUSTER"] = "on"
+    invokeParameters["MAXIMUM_COMPONENT_SIZE"] = "100"
+    invokeParameters["MIN_MATCHED_PEAKS_SEARCH"] = "6"
+    invokeParameters["SCORE_THRESHOLD"] = "0.7"
+    invokeParameters["ANALOG_SEARCH"] = "0"
+    invokeParameters["MAX_SHIFT_MASS"] = "100.0"
+    invokeParameters["FILTER_STDDEV_PEAK_datasetsINT"] = "0.0"
+    invokeParameters["MIN_PEAK_INT"] = "0.0"
+    invokeParameters["FILTER_PRECURSOR_WINDOW"] = "1"
+    invokeParameters["FILTER_LIBRARY"] = "1"
+    invokeParameters["WINDOW_FILTER"] = "1"
+    invokeParameters["CREATE_CLUSTER_BUCKETS"] = "1"
+    invokeParameters["CREATE_ILI_OUTPUT"] = "0"
+
+    return invokeParameters
+
+def launch_GNPS_workflow(ftp_path, job_description, username, password, groups_present, email, preset):
+    invokeParameters = {}
+
+    if preset == "LOWRES":
+        invokeParameters = get_classic_networking_lowres_parameters()
+    elif preset == "HIGHRES":
+        invokeParameters = get_classic_networking_highres_parameters()
+    else:
+        return "Error No Preset"
+
+    invokeParameters["desc"] = job_description
+    invokeParameters["spec_on_server"] = "d." + ftp_path + "/G1;"
+    if "G2" in groups_present:
+        invokeParameters["spec_on_server_group2"] = "d." + ftp_path + "/G2;"
+    if "G3" in groups_present:
+        invokeParameters["spec_on_server_group3"] = "d." + ftp_path + "/G3;"
+
     invokeParameters["email"] = email
-    invokeParameters["uuid"] = "1DCE40F7-1211-0001-979D-15DAB2D0B500"
+
 
     task_id = invoke_workflow("gnps.ucsd.edu", invokeParameters, username, password)
 

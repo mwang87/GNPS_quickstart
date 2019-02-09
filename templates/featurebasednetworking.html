@@ -62,7 +62,7 @@
             <div class="row">
               <div class="col-sm"></div>
               <div class="col-sm text-center">
-                  <h2>GNPS Analysis, Superquick Start</h2>
+                  <h2>GNPS Feature Based Molecular Networking Analysis, Superquick Start</h2>
               </div>
               <div class="col-sm"></div>
             </div>
@@ -102,7 +102,7 @@
                       <br>
                       <input type="password" class="form-control" name="password" id="password" placeholder="Enter Your GNPS Password">
                       <hr>
-                      <button id="analyzebutton" class="btn btn-primary" onclick="analyzeButton()" >Analyze Uploaded Files with GNPS Featured Based Molecular Networking </button>
+                      <button id="analyzebutton" class="btn btn-primary" onclick="analyzeNetworking()" >Analyze Uploaded Files with GNPS Featured Based Molecular Networking </button>
                         <!-- <button class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'>" onclick="myFunction()">Analyze Uploaded Files with GNPS Molecular Networking</button> -->
                   </div>
               </div>
@@ -168,7 +168,7 @@
         samplemetadata_dropzone = new Dropzone("#samplemetadata", { url: "samplemetadata", maxFilesize: 200, parallelUploads:1});
         additionalpairs_dropzone = new Dropzone("#additionalpairs", { url: "additionalpairs", maxFilesize: 200, parallelUploads:1});
 
-        function analyzeButton() {
+        function analyzeNetworking() {
             $("#analyzebutton").html("<i class='fa fa-spinner fa-spin '></i> Processing")
 
             email = $("#email").val()
