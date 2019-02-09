@@ -64,10 +64,10 @@ def check_ftp_folders(username):
     return present_folders
 
 
-def upload_to_gnps(input_filename, folder_for_spectra, group_name):
+def upload_to_gnps(input_filename, folder_for_spectra, group_name, username=credentials.USERNAME, password=credentials.PASSWORD):
     url = "ccms-ftp01.ucsd.edu"
 
-    with ftputil.FTPHost(url, credentials.USERNAME, credentials.PASSWORD) as ftp_host:
+    with ftputil.FTPHost(url, username, password) as ftp_host:
         names = ftp_host.listdir(ftp_host.curdir)
         try:
             if not folder_for_spectra in names:
@@ -281,6 +281,8 @@ def get_featurenetworking_highres_parameters():
     invokeParameters["uuid"] = "1DCE40F7-1211-0001-979D-15DAB2D0B500"
 
     return invokeParameters
+
+
 
 
 def invoke_workflow(base_url, parameters, login, password):

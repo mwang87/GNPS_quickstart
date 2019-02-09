@@ -8,6 +8,7 @@ import glob
 import json
 import requests
 import util
+import util_spectrumannotation
 import credentials
 
 
@@ -172,7 +173,7 @@ def analyzefeaturenetworking():
     return json.dumps(content), 200
 
 
-"""This is a single shot upload and submit API endpoitn built for Robin's module in MZMine2"""
+"""This is a single shot upload and submit API endpoint built for Robin's module in MZMine2"""
 @app.route('/uploadanalyzefeaturenetworking', methods=['POST'])
 def uploadanalyzefeaturenetworking():
     sessionid = str(uuid.uuid4())
@@ -234,3 +235,31 @@ def uploadanalyzefeaturenetworking():
 
     content = {'status': 'Success', 'task_id': task_id, 'url': "https://gnps.ucsd.edu/ProteoSAFe/status.jsp?task=%s" % (task_id)}
     return json.dumps(content), 200
+
+
+"""This is a single shot upload and submit API endpoint built to add reference MS/MS spectra"""
+@app.route('/depostsinglespectrum', methods=['POST'])
+def depositsinglespectrum():
+    gnps_username = request.form["username"]
+    gnps_password = request.form["password"]
+
+    email = ""
+    try:
+        email = request.form["email"]
+    except:
+        email = ""
+    if len(email) < 1 or len(email) > 100:
+        email = "ccms.web@gmail.com"
+
+    reference_spectrum = json.loads(request.form["spectrum"])
+
+    """Saving Spectrum"""
+    save_filename = os.path.join(app.config['UPLOAD_FOLDER'], "reference_spectra", str(uuid.uuid4()) + ".mgf")
+    print(save_filename)
+    util_spectrumannotation.save_spectrum(reference_spectrum, save_filename)
+    util.upload_to_gnps(save_filename, "reference_spectra", "reference_spectra", username=gnps_username, password=gnps_password)
+
+    """Submitting Spectrum"""
+    task = util_spectrumannotation.launch_addreferencespectrum_workflow(reference_spectrum, save_filename, "f." + os.path.join(gnps_username, "reference_spectra", "reference_spectra", os.path.basename(save_filename)), gnps_username, gnps_password, email)
+
+    return task

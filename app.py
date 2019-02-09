@@ -22,3 +22,9 @@ app = CustomFlask(__name__)
 app.config.from_object(__name__)
 UPLOAD_FOLDER = './tempuploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+try:
+    os.mkdir(UPLOAD_FOLDER)
+    os.mkdir(os.path.join(UPLOAD_FOLDER, "reference_spectra"))
+except:
+    print("cannot make folder", UPLOAD_FOLDER)
