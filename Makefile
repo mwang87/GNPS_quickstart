@@ -15,3 +15,6 @@ interactive: clean
 
 bash: clean
 	docker run -it -p 5050:5000 --name gnpsquickstart gnpsquickstart bash
+
+attach:
+	docker exec -i -t gnpsquickstart /bin/bash
