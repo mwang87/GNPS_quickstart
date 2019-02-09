@@ -112,10 +112,10 @@
                 window.location.replace(url);
             }
 
-            featurequantification_dropzone = new Dropzone("#featurequantification", { url: "featurequantification", maxFilesize: 200, parallelUploads:1});
-            featurems2_dropzone = new Dropzone("#featurems2", { url: "featurems2", maxFilesize: 200, parallelUploads:1});
-            samplemetadata_dropzone = new Dropzone("#samplemetadata", { url: "samplemetadata", maxFilesize: 200, parallelUploads:1});
-            additionalpairs_dropzone = new Dropzone("#additionalpairs", { url: "additionalpairs", maxFilesize: 200, parallelUploads:1});
+            featurequantification_dropzone = new Dropzone("#featurequantification", { url: "featurequantification", maxFilesize: 200, parallelUploads:1, timeout: 300000});
+            featurems2_dropzone = new Dropzone("#featurems2", { url: "featurems2", maxFilesize: 200, parallelUploads:1, timeout: 300000});
+            samplemetadata_dropzone = new Dropzone("#samplemetadata", { url: "samplemetadata", maxFilesize: 200, parallelUploads:1, timeout: 300000});
+            additionalpairs_dropzone = new Dropzone("#additionalpairs", { url: "additionalpairs", maxFilesize: 200, parallelUploads:1, timeout: 300000});
 
             function analyzeNetworking() {
                 $("#analyzebutton").html("<i class='fa fa-spinner fa-spin '></i> Processing")
