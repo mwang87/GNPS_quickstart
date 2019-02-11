@@ -19,7 +19,7 @@ def save_spectrum(spectrum_json, output_filename):
         output_file.write("\n".join(output_list))
 
 
-def launch_addreferencespectrum_workflow(spectrum_json, local_filename, remote_filename, username, password, email):
+def launch_addreferencespectrum_workflow(spectrum_json, local_filename, remote_filename, username, password, email, test=True):
     invokeParameters = get_referencespectra_parameters()
     invokeParameters["email"] = email
 
@@ -43,6 +43,9 @@ def launch_addreferencespectrum_workflow(spectrum_json, local_filename, remote_f
 
     invokeParameters["desc"] = spectrum_json["description"]
 
+    if test:
+        invokeParameters["library_on_server"] = "f.%s/reference_spectra/TEST-LIBRARY.mgf;" % (username)
+
     print(invokeParameters.keys())
 
     task_id = util.invoke_workflow("gnps.ucsd.edu", invokeParameters, username, password)
@@ -55,8 +58,8 @@ def get_referencespectra_parameters():
     invokeParameters["workflow"] = "ADD-SINGLE-ANNOTATED-BRONZE"
     invokeParameters["protocol"] = "None"
     invokeParameters["desc"] = "Job Description"
-    #invokeParameters["library_on_server"] = "f.speclibs/GNPS-LIBRARY/GNPS-LIBRARY.mgf;"
-    invokeParameters["library_on_server"] = "f.test/TEST_LIBRARY.mgf;"
+    invokeParameters["library_on_server"] = "f.speclibs/GNPS-LIBRARY/GNPS-LIBRARY.mgf;"
+
 
     invokeParameters["ADDSPECTRA_LIBQUALITY"] = "3"
     invokeParameters["INTEREST"] = "N/A"

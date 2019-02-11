@@ -3,6 +3,7 @@ import requests
 
 
 spectrum = {}
+spectrum["description"] = "Blank Description"
 spectrum["peaks"] = [[100, 100], [101, 90]]
 spectrum["MZ"] = 70
 spectrum["CHARGE"] = 1

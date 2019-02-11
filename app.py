@@ -25,6 +25,10 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 try:
     os.mkdir(UPLOAD_FOLDER)
-    os.mkdir(os.path.join(UPLOAD_FOLDER, "reference_spectra"))
 except:
     print("cannot make folder", UPLOAD_FOLDER)
+
+try:
+    os.mkdir(os.path.join(UPLOAD_FOLDER, "reference_spectra"))
+except:
+    print("cannot make folder reference_spectra")
