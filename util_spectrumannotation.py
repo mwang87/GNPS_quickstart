@@ -3,7 +3,7 @@ import util
 
 
 def save_spectrum(spectrum_json, output_filename):
-    #output_file = open(output_filename, "w")
+
     output_list = []
     output_list.append("BEGIN IONS")
     output_list.append("PEPMASS=%s" % (str(spectrum_json["MZ"])))
@@ -41,7 +41,7 @@ def launch_addreferencespectrum_workflow(spectrum_json, local_filename, remote_f
     invokeParameters["ADDSPECTRA_CASNUMBER"] = spectrum_json["CASNUMBER"]
     invokeParameters["ADDSPECTRA_PI"] = spectrum_json["PI"]
 
-    invokeParameters["desc"] = spectrum_json["description"]
+    invokeParameters["desc"] = "MZMine2 Direct Submission - "spectrum_json["description"]
 
     if test:
         invokeParameters["library_on_server"] = "f.%s/reference_spectra/TEST-LIBRARY.mgf;" % (username)
