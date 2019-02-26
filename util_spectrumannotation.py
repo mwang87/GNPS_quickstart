@@ -41,7 +41,13 @@ def launch_addreferencespectrum_workflow(spectrum_json, local_filename, remote_f
     invokeParameters["ADDSPECTRA_CASNUMBER"] = spectrum_json["CASNUMBER"]
     invokeParameters["ADDSPECTRA_PI"] = spectrum_json["PI"]
 
-    invokeParameters["desc"] = "MZMine2 Direct Submission - " + spectrum_json["description"]
+    if "softwaresource" in spectrum_json:
+        if spectrum_json["softwaresource"] == "mzmine2":
+            invokeParameters["desc"] = "MZMine2 Direct Submission - " + spectrum_json["description"]
+        else:
+            invokeParameters["desc"] = "Anonymous Software Direct Submission - " + spectrum_json["description"]
+    else:
+        invokeParameters["desc"] = "Anonymous Software Direct Submission - " + spectrum_json["description"]
 
     if test:
         invokeParameters["library_on_server"] = "f.%s/reference_spectra/TEST-LIBRARY.mgf;" % (username)
