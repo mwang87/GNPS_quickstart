@@ -26,7 +26,7 @@ def launch_addreferencespectrum_workflow(spectrum_json, local_filename, remote_f
     invokeParameters["spec_on_server"] = remote_filename
     invokeParameters["ADDSPECTRA_COMPOUND_NAME"] = spectrum_json["COMPOUND_NAME"]
     invokeParameters["ADDSPECTRA_CHARGE"] = spectrum_json["CHARGE"]
-    invokeParameters["ADDSPECTRA_MOLECULEMASS"] = spectrum_json["MOLECULEMASS"]
+    invokeParameters["ADDSPECTRA_MOLECULEMASS"] = "0"
     invokeParameters["ADDSPECTRA_INSTRUMENT"] = spectrum_json["INSTRUMENT"]
     invokeParameters["ADDSPECTRA_IONSOURCE"] = spectrum_json["IONSOURCE"]
     invokeParameters["ADDSPECTRA_SMILES"] = spectrum_json["SMILES"]
