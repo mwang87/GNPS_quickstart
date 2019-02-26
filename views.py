@@ -258,6 +258,8 @@ def depositsinglespectrum():
     if len(email) < 1 or len(email) > 100:
         email = "ccms.web@gmail.com"
 
+    print("SPECTRUM STRING", request.form["spectrum"])
+
     reference_spectrum = json.loads(request.form["spectrum"])
 
     """Saving Spectrum"""

@@ -6,8 +6,8 @@ def save_spectrum(spectrum_json, output_filename):
     #output_file = open(output_filename, "w")
     output_list = []
     output_list.append("BEGIN IONS")
-    output_list.append("PEPMASS=%s" % (spectrum_json["MZ"]))
-    output_list.append("CHARGE=%s" % (spectrum_json["CHARGE"]))
+    output_list.append("PEPMASS=%s" % (str(spectrum_json["MZ"])))
+    output_list.append("CHARGE=%s" % (str(spectrum_json["CHARGE"])))
     output_list.append("MSLEVEL=2")
     output_list.append("PRECURSORINTENSITY=0")
     output_list.append("SCANS=1")
@@ -45,8 +45,6 @@ def launch_addreferencespectrum_workflow(spectrum_json, local_filename, remote_f
 
     if test:
         invokeParameters["library_on_server"] = "f.%s/reference_spectra/TEST-LIBRARY.mgf;" % (username)
-
-    print(invokeParameters.keys())
 
     task_id = util.invoke_workflow("gnps.ucsd.edu", invokeParameters, username, password)
 
