@@ -224,9 +224,14 @@ def uploadanalyzefeaturenetworking():
         gnps_username = credentials.USERNAME
         gnps_password = credentials.PASSWORD
 
+    task_description = "GNPS Quickstart Molecular Networking Analysis from MZmine2"
+
+    if "description" in request.form:
+        if len(request.form["description"]) > 1:
+            task_description = request.form["description"]
 
     remote_dir = os.path.join(credentials.USERNAME, sessionid)
-    task_id = util.launch_GNPS_featurenetworking_workflow(remote_dir, "GNPS Quickstart Molecular Networking Analysis ", gnps_username, gnps_password, email, featuretool, present_folders, networkingpreset)
+    task_id = util.launch_GNPS_featurenetworking_workflow(remote_dir, task_description, gnps_username, gnps_password, email, featuretool, present_folders, networkingpreset)
 
     #Error
     if len(task_id) != 32:
