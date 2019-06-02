@@ -249,9 +249,11 @@ def depositsinglespectrum():
     gnps_password = request.form["password"]
 
     """Debugging"""
+    TEST = False
     if "test" in request.form:
         gnps_username = credentials.USERNAME
         gnps_password = credentials.PASSWORD
+        TEST = True
 
     email = ""
     try:
