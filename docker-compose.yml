@@ -10,3 +10,4 @@ services:
     networks:
       - default
     restart: unless-stopped
+    command: /app/run_server.sh
