@@ -60,7 +60,7 @@ def upload_single_file_push(request_file, uuid_folder, collection_name):
         os.remove(local_filename)
     else:
         print("not allowed")
-        json.dumps({"status": "Invalid File Type"})
+        return json.dumps({"status": "Invalid File Type"})
 
     return json.dumps({"filename": filename})
 
