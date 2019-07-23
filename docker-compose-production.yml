@@ -1,0 +1,18 @@
+version: '3'
+services:
+  web:
+    networks:
+      - default
+      - nginx-net
+    environment:
+      VIRTUAL_HOST: gnps-quickstart.ucsd.edu
+      #VIRTUAL_HOST: mingwangbeta.ucsd.edu
+      VIRTUAL_PORT: 5050
+      LETSENCRYPT_HOST: gnps-quickstart.ucsd.edu
+      #LETSENCRYPT_HOST: mingwangbeta.ucsd.edu
+      LETSENCRYPT_EMAIL: miw023@ucsd.edu
+
+networks:
+  nginx-net:
+    external:
+      name: nginx-net
