@@ -5,8 +5,6 @@ services:
     container_name: gnpsquickstart
     ports:
     - "5050:5000"
-    volumes:
-    - ../static:/app/static
     networks:
       - default
     restart: unless-stopped
