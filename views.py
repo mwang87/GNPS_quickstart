@@ -249,11 +249,11 @@ def depositsinglespectrum():
     gnps_password = request.form["password"]
 
     """Debugging"""
-    TEST=True
-
-    if TEST:
+    TEST = False
+    if "test" in request.form:
         gnps_username = credentials.USERNAME
         gnps_password = credentials.PASSWORD
+        TEST = True
 
     email = ""
     try:
@@ -271,8 +271,6 @@ def depositsinglespectrum():
     save_filename = os.path.join(app.config['UPLOAD_FOLDER'], "reference_spectra", str(uuid.uuid4()) + ".mgf")
     util_spectrumannotation.save_spectrum(reference_spectrum, save_filename)
     util.upload_to_gnps(save_filename, "reference_spectra", "reference_spectra", username=gnps_username, password=gnps_password)
-
-
 
     """Submitting Spectrum"""
     task = util_spectrumannotation.launch_addreferencespectrum_workflow(reference_spectrum, save_filename, "f." + os.path.join(gnps_username, "reference_spectra", "reference_spectra", os.path.basename(save_filename)), gnps_username, gnps_password, email, test=TEST)
