@@ -7,7 +7,7 @@ import json
 import requests
 from werkzeug.utils import secure_filename
 
-ALLOWED_EXTENSIONS = set(['mgf', 'mzxml', 'mzml', 'csv', 'txt', "raw"])
+ALLOWED_EXTENSIONS = set(['mgf', 'mzxml', 'mzml', 'csv', 'txt', "raw", 'msp'])
 
 
 def allowed_file(filename):
