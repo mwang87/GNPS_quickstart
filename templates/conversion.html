@@ -1,0 +1,121 @@
+
+(% extends "layout.html" %)
+
+(% block content %)
+
+        <div class="container-fluid">
+            <br>
+            <br>
+            <div class="row">
+              <div class="col-sm"></div>
+              <div class="col-sm text-center">
+                  <h2>Conversion Drag and Drop</h2>
+              </div>
+              <div class="col-sm"></div>
+            </div>
+
+            <br>
+            <div class="row">
+              <div class="col-sm"></div>
+              <div class="col-sm">
+                      <p>
+                        Drag and drop mzXML/mzML/vendor files here to upload files to convert.
+                      </p>
+              </div>
+              <div class="col-sm"></div>
+            </div>
+
+            <div class="row">
+              <div class="col-sm"></div>
+              <div class="col-sm">
+                  <button onclick="ConvertFiles()" class="btn btn-primary">Convert Uploaded Files</button>
+              </div>
+              <div class="col-sm"></div>
+            </div>
+
+            <hr>
+
+            <div class="row">
+                <div class="dropzone col-md" id="group1">
+                    <div class="dz-message">Drop files here or click to upload<br>
+                    </div>
+                </div>
+            </div>
+
+            <div id="app-4" class="container-fluid">
+                <br>
+                <h3 class="text-center">Conversion Summary</h3>
+                <br>
+                <table class="table table-sm table-striped">
+                    <thead>
+                        <tr>
+                            <th>Filename</th>
+                            <th>View</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="stat in stats">
+                            <td>{{stat.filename}}</td>
+                            <td>
+                                <summary-linkout :filename=stat.filename></summary-linkout>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <script>
+            group1dropzone = new Dropzone("#group1", { url: "conversionupload", maxFilesize: 1000, parallelUploads:20, timeout: 300000});
+            group1dropzone.on("sending", function(file, xhr, data) {
+                if(file.fullPath){
+                    data.append("fullPath", file.fullPath);
+                }
+            });
+            function ConvertFiles(){
+                $("#loadMe").modal({
+                  backdrop: "static", //remove ability to close modal with click
+                  keyboard: false, //remove option to close with keyboard
+                  show: true //Display loader!
+                });
+                $.ajax(
+                    {
+                        url: "/processconvert",
+                        success: function(result){
+                            $("#loadMe").modal("hide");
+                            
+                            app4._data.stats = result
+                            let r = Math.random().toString(36).substring(7);
+                            window.location = "/downloadconvert?" + r
+                        },
+                        dataType: "json"
+                    }
+                );
+            }
+            Vue.component('summary-linkout', {
+                props: ['filename'],
+                data: function() {
+                    return {}
+                },
+                methods: {
+                    clickMe: function(event) {
+                        analysis_url = "/summaryconvert?filename=" + encodeURIComponent(this.$props["filename"])
+                        var win = window.open(analysis_url, '_blank');
+                        win.focus();
+                    }
+                },
+                template: '<div><button class="btn btn-secondary btn-sm" style="margin-bottom:4px" v-on:click="clickMe">View Summary</button></div>'
+            })
+            var app4 = new Vue({
+                el: '#app-4',
+                methods: {
+                },
+                data: {
+                    stats: []
+                }
+            })
+        </script>
+
+
+(% endblock %)
