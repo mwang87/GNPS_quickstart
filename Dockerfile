@@ -1,5 +1,4 @@
-FROM ubuntu:18.04
-FROM mono:latest
+FROM chambm/pwiz-skyline-i-agree-to-the-vendor-licenses:3.0.19056-6b6b0a2b4
 
 MAINTAINER Mingxun Wang "mwang87@gmail.com"
 
@@ -12,24 +11,26 @@ RUN pip3 install gunicorn
 RUN pip3 install requests
 
 
-################## METADATA ######################
-LABEL base_image="mono:latest"
-LABEL version="1"
-LABEL software="ThermoRawFileParser"
-LABEL software.version="1.0.0"
-LABEL about.summary="A software to convert Thermo RAW files to mgf and mzML"
-LABEL about.home="https://github.com/compomics/ThermoRawFileParser"
-LABEL about.documentation="https://github.com/compomics/ThermoRawFileParser"
-LABEL about.license_file="https://github.com/compomics/ThermoRawFileParser"
-LABEL about.license="SPDX:Unknown"
-LABEL about.tags="Proteomics"
+#Installing R
+RUN add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/'
+RUN apt-get update
+RUN apt-get install -y --allow-unauthenticated r-base
+RUN apt-get install -y --allow-unauthenticated r-base-dev
 
-################## INSTALLATION ######################
-RUN apt-get install -y git
-
-WORKDIR /src
-RUN git clone -b master --single-branch https://github.com/compomics/ThermoRawFileParser /src
-RUN msbuild
+RUN apt-get install -y libcurl4-openssl-dev
+RUN apt-get install -y libnetcdf-dev
+RUN apt-get install -y libssl-dev
+RUN apt-get install -y libgomp1
+RUN apt-get install -y pandoc
+RUN R -e "install.packages('remotes', repos = 'http://cran.us.r-project.org', Ncpus=8)"
+RUN R -e "install.packages('data.table', repos = 'http://cran.us.r-project.org', Ncpus=8)"
+RUN R -e "install.packages('ggplot2', repos = 'http://cran.us.r-project.org', Ncpus=8)"
+RUN R -e "install.packages('shiny', repos = 'http://cran.us.r-project.org', Ncpus=8)"
+RUN R -e "install.packages('dplyr', repos = 'http://cran.us.r-project.org', Ncpus=8)"
+RUN R -e "install.packages('magrittr', repos = 'http://cran.us.r-project.org', Ncpus=8)"
+RUN R -e "install.packages('plotly', repos = 'http://cran.us.r-project.org', Ncpus=8)"
+RUN R -e "install.packages('mzR', repos = 'http://cran.us.r-project.org', Ncpus=8)"
+RUN R -e "remotes::install_github('chasemc/mzPlotter')"
 
 COPY . /app
 WORKDIR /app
