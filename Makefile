@@ -1,5 +1,5 @@
 build:
-	docker build -t gnpsquickstart .
+	docker build -f Dockerfile.website -t gnpsquickstart .
 
 clean:
 	docker rm gnpsquickstart |:
@@ -20,6 +20,8 @@ attach:
 	docker exec -i -t gnpsquickstart /bin/bash
 
 
+
+#Docker Compose
 server-compose-interactive:
 	docker-compose build
 	docker-compose up

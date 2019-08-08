@@ -1,5 +1,5 @@
 # views.py
-from flask import abort, jsonify, render_template, request, redirect, url_for, make_response
+from flask import abort, jsonify, render_template, request, redirect, url_for, make_response, send_from_directory
 import uuid
 
 from app import app
@@ -276,3 +276,39 @@ def depositsinglespectrum():
     task = util_spectrumannotation.launch_addreferencespectrum_workflow(reference_spectrum, save_filename, "f." + os.path.join(gnps_username, "reference_spectra", "reference_spectra", os.path.basename(save_filename)), gnps_username, gnps_password, email, test=TEST)
 
     return task
+
+
+#Conversion Endpoints
+import conversion_tasks
+
+@app.route('/conversion', methods=['GET'])
+def conversion():
+    response = make_response(render_template('conversion.html'))
+    response.set_cookie('sessionid', str(uuid.uuid4()))
+    return response
+
+@app.route('/conversionupload', methods=['POST'])
+def conversionupload():
+    upload_string = conversion_tasks.save_single_file(request)
+
+    return "{}"
+
+@app.route('/processconvert', methods=['GET', "POST"])
+def processconvert():
+    sessionid = request.cookies.get('sessionid')
+    summary_list = conversion_tasks.convert_all(sessionid)
+
+    return json.dumps(summary_list)
+
+"""Custom way to send files back to client"""
+@app.route('/downloadconvert', methods=['GET'])
+def custom_static():
+    sessionid = request.cookies.get('sessionid')
+    return send_from_directory(os.path.join("/output", sessionid), "converted.tar")
+
+@app.route('/summaryconvert', methods=['GET'])
+def summary_file():
+    sessionid = request.cookies.get('sessionid')
+    filename = request.args.get("filename")
+
+    return send_from_directory(os.path.join("/output", sessionid, "summary"), filename + ".html")

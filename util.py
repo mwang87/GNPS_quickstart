@@ -7,13 +7,14 @@ import json
 import requests
 from werkzeug.utils import secure_filename
 
-ALLOWED_EXTENSIONS = set(['mgf', 'mzxml', 'mzml', 'csv', 'txt', "raw", 'msp'])
+ALLOWED_EXTENSIONS = set(['mgf', 'mzxml', 'mzml', 'csv', 'txt', 'raw', 'msp'])
 
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def process_localfile(input_filename, save_dir):
+
+def thermoconvert_localfile(input_filename, save_dir):
     extension = input_filename.rsplit('.', 1)[-1].lower()
     print(extension)
 
@@ -51,7 +52,7 @@ def upload_single_file_push(request_file, uuid_folder, collection_name):
         request_file.save(local_filename)
 
         """If we need to convert raw file, we do it here"""
-        local_filename = process_localfile(local_filename, save_dir)
+        local_filename = thermoconvert_localfile(local_filename, save_dir)
 
         #Uploading to FTP
         upload_to_gnps(local_filename, uuid_folder, collection_name)
