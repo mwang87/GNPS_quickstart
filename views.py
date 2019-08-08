@@ -10,7 +10,7 @@ import requests
 import util
 import util_spectrumannotation
 import credentials
-
+import urllib.parse
 
 @app.route('/heartbeat', methods=['GET'])
 def heartbeat():
@@ -312,3 +312,64 @@ def summary_file():
     filename = request.args.get("filename")
 
     return send_from_directory(os.path.join("/output", sessionid, "summary"), filename + ".html")
+
+
+#MassIVE Dataset Submission Endpoints
+@app.route('/massivesubmission', methods=['GET'])
+def dataset():
+    response = make_response(render_template('dataset.html'))
+    response.set_cookie('sessionid', str(uuid.uuid4()))
+    return response
+
+@app.route('/datasetupload/raw', methods=['POST'])
+def upload_raw():
+    upload_string = util.upload_single_file(request, "raw")
+    response = make_response()
+    response.set_cookie('selectedFiles', "True")
+
+    return response
+
+@app.route('/datasetupload/peak', methods=['POST'])
+def upload_peak():
+    upload_string = util.upload_single_file(request, "peak")
+    response = make_response()
+    response.set_cookie('selectedFiles', "True")
+
+    return response
+
+@app.route('/datasetupload/supplementary', methods=['POST'])
+def upload_supplementary():
+    upload_string = util.upload_single_file(request, "supplementary")
+    response = make_response()
+    response.set_cookie('selectedFiles', "True")
+
+    return response
+
+@app.route('/datasetsubmit', methods=['POST'])
+def datasetsubmit():
+    sessionid = request.cookies.get('sessionid')
+    present_folders = util.check_ftp_folders(sessionid)
+
+    massive_preset_url = "https://massive.ucsd.edu/ProteoSAFe/index.jsp"
+    parameters = {"workflow":"MASSIVE-COMPLETE", "desc" : "GNPS - Dataset Created via Quickstart"}
+
+    one_category_present = False
+
+    if "raw" in present_folders:
+        one_category_present = True
+        parameters["raw_list_files"] = "d.%s/%s/raw" % (credentials.USERNAME, sessionid)
+
+    if "peak" in present_folders:
+        one_category_present = True
+        parameters["peak_list_files"] = "d.%s/%s/peak" % (credentials.USERNAME, sessionid)
+
+    if "supplementary" in present_folders:
+        one_category_present = True
+        parameters["other_files"] = "d.%s/%s/supplementary" % (credentials.USERNAME, sessionid)
+
+    
+    url = massive_preset_url + "#" + json.dumps(parameters)
+
+
+    return url, 200
+
