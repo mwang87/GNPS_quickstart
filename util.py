@@ -7,26 +7,12 @@ import json
 import requests
 from werkzeug.utils import secure_filename
 
-ALLOWED_EXTENSIONS = set(['mgf', 'mzxml', 'mzml', 'csv', 'txt', "raw", 'msp'])
+ALLOWED_EXTENSIONS = set(['mgf', 'mzxml', 'mzml', 'csv', 'txt', 'msp'])
 
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def process_localfile(input_filename, save_dir):
-    extension = input_filename.rsplit('.', 1)[-1].lower()
-    print(extension)
-
-    """Do Nothing"""
-    if extension != "raw":
-        return input_filename
-
-    """Perform Conversion"""
-    cmd = "mono /src/bin/x64/Debug/ThermoRawFileParser.exe -i=%s -o=%s -f=1" % (input_filename, save_dir)
-    os.system(cmd)
-    os.remove(input_filename)
-    output_filename = os.path.join(save_dir, os.path.basename(input_filename).replace(".raw", ".mzML"))
-    return output_filename
 
 def upload_single_file(request, group):
     sessionid = request.cookies.get('sessionid')
@@ -49,9 +35,6 @@ def upload_single_file_push(request_file, uuid_folder, collection_name):
             os.makedirs(save_dir)
         local_filename = os.path.join(save_dir, filename)
         request_file.save(local_filename)
-
-        """If we need to convert raw file, we do it here"""
-        local_filename = process_localfile(local_filename, save_dir)
 
         #Uploading to FTP
         upload_to_gnps(local_filename, uuid_folder, collection_name)

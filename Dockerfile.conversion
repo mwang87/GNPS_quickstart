@@ -10,7 +10,6 @@ RUN pip3 install flask
 RUN pip3 install gunicorn
 RUN pip3 install requests
 
-
 #Installing R
 RUN add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu xenial-cran35/'
 RUN apt-get update
@@ -31,6 +30,10 @@ RUN R -e "install.packages('magrittr', repos = 'http://cran.us.r-project.org', N
 RUN R -e "install.packages('plotly', repos = 'http://cran.us.r-project.org', Ncpus=8)"
 RUN R -e "install.packages('mzR', repos = 'http://cran.us.r-project.org', Ncpus=8)"
 RUN R -e "remotes::install_github('chasemc/mzPlotter')"
+
+RUN pip3 install celery
+RUN pip3 install joblib
+RUN pip3 install redis
 
 COPY . /app
 WORKDIR /app

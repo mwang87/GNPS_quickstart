@@ -3,13 +3,32 @@ services:
   gnpsquickstart-web:
     build:
       context: .
-      dockerfile: Dockerfile.launchserver
+      dockerfile: Dockerfile.website
     container_name: gnpsquickstart-web
     ports:
     - "5050:5000"
     volumes:
-        - ./output:/output
+        - ./output:/output:rw
     networks:
       - default
     restart: unless-stopped
     command: /app/run_server.sh
+
+  gnpsquickstart-worker1:
+    build:
+      context: .
+      dockerfile: Dockerfile.conversion
+    container_name: gnpsquickstart-worker1
+    volumes:
+        - ./output:/output:rw
+    networks:
+      - default
+    restart: unless-stopped
+    command: /app/run_worker.sh
+
+  gnpsquickstart-redis:
+    image: redis
+    container_name: gnpsquickstart-redis
+    networks:
+      - default
+
