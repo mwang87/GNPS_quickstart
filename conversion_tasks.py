@@ -100,6 +100,7 @@ def save_single_file(request):
 @celery_instance.task(time_limit=120)
 def summarize_file(input_filename, output_html):
     cmd = "Rscript mzscript.R %s %s" % (input_filename, output_html)
+    print(cmd)
     os.system(cmd)
 
 def convert_all(sessionid):
@@ -112,9 +113,9 @@ def convert_all(sessionid):
     except:
         print("Summary Folder Exists")
 
-
     all_bruker_files = glob.glob(os.path.join(save_dir, sessionid, "input", "*.d"))
     all_thermo_files = glob.glob(os.path.join(save_dir, sessionid, "input", "*.raw"))
+    all_thermo_files += glob.glob(os.path.join(save_dir, sessionid, "input", "*.RAW"))
     all_sciex_files = glob.glob(os.path.join(save_dir, sessionid, "input", "*.wiff"))
     all_mzXML_files = glob.glob(os.path.join(save_dir, sessionid, "input", "*.mzXML"))
     all_mzML_files = glob.glob(os.path.join(save_dir, sessionid, "input", "*.mzML"))
@@ -139,7 +140,7 @@ def convert_all(sessionid):
         cmd = 'wine msconvert %s --32 --zlib --ignoreUnknownInstrumentError --filter "peakPicking true 1-" --outdir %s --outfile %s' % (filename, output_conversion_folder, output_filename)
         conversion_commands.append(cmd)
 
-    """mzXML Conversion"""
+    """mzXML/mzML Conversion"""
     for filename in all_mzXML_files + all_mzML_files:
         output_filename = os.path.basename(filename).replace(".mzXML", ".mzML")
         cmd = 'wine msconvert %s --32 --zlib --ignoreUnknownInstrumentError --filter "peakPicking true 1-" --outdir %s --outfile %s' % (filename, output_conversion_folder, output_filename)
@@ -164,7 +165,7 @@ def convert_all(sessionid):
         summarize_file.delay(filename, html_filename)
 
     #Tar up the files
-    cmd = "cd %s && tar -cvf %s %s %s" % (os.path.join(save_dir, sessionid), "converted.tar", "converted", "summary")
+    cmd = "cd %s && tar -cvf %s %s" % (os.path.join(save_dir, sessionid), "converted.tar", "converted")
     os.system(cmd)
 
     summary_list = []
