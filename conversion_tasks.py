@@ -10,6 +10,7 @@ from joblib import Parallel, delayed
 import multiprocessing
 import subprocess
 from time import sleep
+import shutil
 
 celery_instance = Celery('conversion_tasks', backend='redis://gnpsquickstart-redis', broker='redis://gnpsquickstart-redis')
 
@@ -103,6 +104,18 @@ def summarize_file(input_filename, output_html):
     print(cmd)
     os.system(cmd)
 
+@celery_instance.task()
+def cleanup_task(sessionid):
+    save_dir = "/output"
+    remove_path = os.path.join(save_dir, sessionid, "*")
+    all_paths_to_remove = glob.glob(remove_path)
+    for path_to_remove in all_paths_to_remove:
+        print("Removing", path_to_remove)
+        if os.path.isdir(path_to_remove):
+            shutil.rmtree(path_to_remove)
+        else:
+            os.remove(path_to_remove)
+
 def convert_all(sessionid):
     save_dir = "/output"
     output_conversion_folder = os.path.join(save_dir, sessionid, "converted")
@@ -164,10 +177,6 @@ def convert_all(sessionid):
         html_filename = os.path.join(output_summary_folder, os.path.basename(filename) + ".html")
         summarize_file.delay(filename, html_filename)
 
-    #Tar up the files
-    cmd = "cd %s && tar -cvf %s %s" % (os.path.join(save_dir, sessionid), "converted.tar", "converted")
-    os.system(cmd)
-
     summary_list = []
     for converted_file in all_converted_files:
         summary_object = {}
@@ -175,6 +184,13 @@ def convert_all(sessionid):
         summary_object["summaryurl"] = "/summary?filename=%s" % (os.path.basename(converted_file))
 
         summary_list.append(summary_object)
+
+    #Tar up the files
+    cmd = "cd %s && tar -cvf %s %s" % (os.path.join(save_dir, sessionid), "converted.tar", "converted")
+    os.system(cmd)
+
+    #Schedule Cleanup
+    cleanup_task.apply_async( args=[sessionid], countdown=84600)
 
     return summary_list
 
