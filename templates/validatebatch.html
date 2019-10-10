@@ -1,0 +1,123 @@
+(% extends "layout.html" %)
+
+(% block content %)
+
+<!-- This portion is for drag and drop files -->
+
+<script src="https://rawgit.com/enyo/dropzone/master/dist/dropzone.js"></script>
+<link rel="stylesheet" href="https://rawgit.com/enyo/dropzone/master/dist/dropzone.css">
+
+<style>
+    .dropzone { border: 2px dashed #0087F7; border-radius: 5px; background: white; margin: 20px}
+    .dropzone .dz-message { font-weight: 400; }
+    .dropzone .dz-message .note { font-size: 0.8em; font-weight: 200; display: block; margin-top: 1.4rem; }
+    .container-fluid { min-height: 100%; height: 100%;}
+</style>
+
+<div>
+    <div class="container-fluid">
+        <br>
+        <br>
+        <div class="row">
+          <div class="col-sm"></div>
+          <div class="col-sm text-center">
+              <h2>Upload Files</h2>
+          </div>
+          <div class="col-sm"></div>
+        </div>
+
+        <br>
+        <div class="row">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-8">
+                <p>
+                    Drag and drop your batch file here to make sure it validates. It needs to be a tab separated ".tsv" file. Please use our template and follow documentation found <a href="https://ccms-ucsd.github.io/GNPSDocumentation/batchupload/"> here</a>.
+                </p>
+            </div>
+            <div class="col-sm-2"></div>
+        </div>
+
+        <br>
+
+        <div class="row">
+            <div class="col-md-2" id=""></div>
+            <div class="dropzone col-md-8" id="upload">
+                <div class="dz-message">Drop files here!</div>
+            </div>
+            <div class="col-md-2" id=""></div>
+        </div>
+
+        <div id="app-4" class="container-fluid">
+            <br>
+            <h3 class="text-center">Batch Summary</h3>
+            <br>
+            <table class="table table-sm table-striped">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="stat in stats">
+                        <td>{{stat.type}}</td>
+                        <td>{{stat.value}}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <hr>
+
+            <h3 class="text-center">Batch Validation Errors (First 500)</h3>
+            <br>
+            <table class="table table-sm table-striped">
+                <thead>
+                    <tr>
+                        <th>Header</th>
+                        <th>Line Number</th>
+                        <th>Error String</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="error in errors">
+                        <td>{{error.header}}</td>
+                        <td>{{error.line_number}}</td>
+                        <td>{{error.error_string}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    validatedropzone = new Dropzone("#upload", { url: "upload", maxFilesize: 200, parallelUploads:1});
+    validatedropzone.on("success", function(file, response) {
+        response_json = JSON.parse(response)
+        validation_json = JSON.parse(response)
+        app4._data.errors = validation_json.errors.slice(0, 500);
+        app4._data.stats = validation_json.stats;
+        app4._data.pass_validation = validation_json.status;
+        if(validation_json.status){
+            alert("Batch File Passed Validation!")
+        }
+        else{
+            alert("Batch File Failed Validation! Please Check Errors Below.")
+        }
+    });
+    validatedropzone.on("error", function(file) {
+    });
+    var app4 = new Vue({
+        el: '#app-4',
+        methods: {
+        },
+        data: {
+            pass_validation: null,
+            errors: [],
+            stats: []
+        }
+    })
+</script>
+
+
+(% endblock %)
