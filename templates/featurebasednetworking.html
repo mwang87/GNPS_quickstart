@@ -18,15 +18,15 @@
               <div class="col-sm"></div>
               <div class="col-sm">
                       <p>
-                        Drag and drop output from your favorite feature finding tool (e.g. MZmine2, OpenMS, XCMS3, Optimus, MS-Dial).
+                        Drag and drop output from your favorite feature finding tool (e.g. MZmine2, OpenMS, XCMS3, Optimus, MS-Dial, Progenesis-QI, or MetaboScape).
                         <hr>
-                        1. Feature Quantification Table
+                        1. Feature Quantification Table (csv or mzTab-m)
                         <br>
-                        2. Feature MS2
+                        2. Feature MS2: MSP (Progenesis QI), mzML (mzTab-m), or MGF (MZmine2, OpenMS, XCMS3, Optimus, MS-Dial)
                         <br>
-                        3. Sample Metadata
+                        3. Experiment Metadata
                         <br>
-                        4. Additional pairs externally generated
+                        4. Additional pairs externally generated (e.g. Ion-Identity Networking)
                         <br>
                         <br>
                       </p>
@@ -66,10 +66,10 @@
                             <option value="MZMINE2">MZMine2</option>
                             <option value="OPENMS">OpenMS</option>
                             <option value="MSDIAL">MS-Dial</option>
-                            <option value="XCMS">XMCS</option>
+                            <option value="XCMS">XCMS3</option>
                             <option value="OPTIMUS">Optimus</option>
-                            <option value="METABOSCAPE">Metaboscape</option>
-                            <option value="PROGENESIS">Progenesis</option>
+                            <option value="METABOSCAPE">MetaboScape</option>
+                            <option value="PROGENESIS">Progenesis QI</option>
                         </select>
                     </div>
                 </div>
@@ -90,7 +90,7 @@
                     </div>
                 </div>
                 <div class="dropzone col-md" id="featurems2">
-                    <div class="dz-message">Drop file here to upload feature MS2 MGF file <br> (Files Required)
+                    <div class="dz-message">Drop file here to upload feature MS2 MGF/MSP/mzML file(s) <br> (Files Required)
                     </div>
                 </div>
             </div>
