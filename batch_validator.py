@@ -34,13 +34,10 @@ def perform_batch_validation(filename):
             IntValidator()
         ],
         'SMILES': [
-            NotEmptyValidator()
         ],
         'INCHI': [
-            NotEmptyValidator()
         ],
         'INCHIAUX': [
-            NotEmptyValidator()
         ],
         'CHARGE': [
             IntValidator()
@@ -64,19 +61,15 @@ def perform_batch_validation(filename):
             NotEmptyValidator()
         ],
         'INTEREST': [
-            NotEmptyValidator()
         ],
         'LIBQUALITY': [
             SetValidator(valid_set=["1", "2", "3"])
         ],
         'GENUS': [
-            NotEmptyValidator()
         ],
         'SPECIES': [
-            NotEmptyValidator()
         ],
         'STRAIN': [
-            NotEmptyValidator()
         ],
         'CASNUMBER': [
             NotEmptyValidator()

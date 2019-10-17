@@ -91,7 +91,7 @@
 </div>
 
 <script>
-    validatedropzone = new Dropzone("#upload", { url: "upload", maxFilesize: 200, parallelUploads:1});
+    validatedropzone = new Dropzone("#upload", { url: "validatebatch", maxFilesize: 200, parallelUploads:1});
     validatedropzone.on("success", function(file, response) {
         response_json = JSON.parse(response)
         validation_json = JSON.parse(response)
