@@ -13,7 +13,8 @@ RUN pip3 install requests
 RUN pip3 install celery
 RUN pip3 install joblib
 RUN pip3 install redis
-
+RUN pip3 install vladiate
+RUN pip3 install pandas
 
 ################## METADATA ######################
 LABEL base_image="mono:latest"
