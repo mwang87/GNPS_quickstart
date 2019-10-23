@@ -129,6 +129,8 @@ def get_classic_networking_lowres_parameters():
     invokeParameters["WINDOW_FILTER"] = "1"
     invokeParameters["CREATE_CLUSTER_BUCKETS"] = "1"
     invokeParameters["CREATE_ILI_OUTPUT"] = "0"
+    invokeParameters["FILTER_G6_BLANKS"] = "0"
+    
 
     return invokeParameters
 
@@ -156,6 +158,7 @@ def get_classic_networking_highres_parameters():
     invokeParameters["WINDOW_FILTER"] = "1"
     invokeParameters["CREATE_CLUSTER_BUCKETS"] = "1"
     invokeParameters["CREATE_ILI_OUTPUT"] = "0"
+    invokeParameters["FILTER_G6_BLANKS"] = "0"
 
     return invokeParameters
 
