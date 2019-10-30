@@ -37,3 +37,8 @@ def test_dataset3():
 
     passes_validation, failures, errors_list, valid_rows, total_rows = batch_validator.perform_batch_validation("reference_data/smalltest_failing.tsv")
     assert(passes_validation == True)
+
+def test_dataset4():
+    import batch_validator
+    passes_validation, failures, errors_list, valid_rows, total_rows = batch_validator.perform_batch_validation("reference_data/sarcophyton.tsv")
+    assert(passes_validation == True)
