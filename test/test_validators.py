@@ -26,3 +26,14 @@ def test_datat2():
 
     passes_validation, failures, errors_list, valid_rows, total_rows = batch_validator.perform_batch_validation("reference_data/GNPS00006_output_batch.tsv")
     assert(passes_validation == False)
+
+def test_dataset3():
+    import batch_validator
+    passes_validation, failures, errors_list, valid_rows, total_rows = batch_validator.perform_batch_validation("reference_data/library_batch_full_test.tsv")
+    assert(passes_validation == True)
+
+    passes_validation, failures, errors_list, valid_rows, total_rows = batch_validator.perform_batch_validation("reference_data/smalltest.tsv")
+    assert(passes_validation == True)
+
+    passes_validation, failures, errors_list, valid_rows, total_rows = batch_validator.perform_batch_validation("reference_data/smalltest_failing.tsv")
+    assert(passes_validation == True)
