@@ -44,6 +44,7 @@ def validatebatchpost():
      
     """Trying stuff out with pandas"""
     metadata_df = pd.read_csv(local_filename, keep_default_na=False, sep="\t")
+    metadata_df = metadata_df.truncate(after=2000)
     metadata_df.to_csv(local_filename, index=False, sep="\t")
     
     pass_validation, failures, errors_list, valid_rows, total_rows = batch_validator.perform_batch_validation(local_filename)
