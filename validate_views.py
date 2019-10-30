@@ -43,9 +43,24 @@ def validatebatchpost():
     request_file.save(local_filename)
      
     """Trying stuff out with pandas"""
-    metadata_df = pd.read_csv(local_filename, keep_default_na=False, sep="\t")
-    metadata_df = metadata_df.truncate(after=2000)
-    metadata_df.to_csv(local_filename, index=False, sep="\t")
+    try:
+        metadata_df = pd.read_csv(local_filename, keep_default_na=False, sep="\t")
+        metadata_df = metadata_df.truncate(after=2000)
+        metadata_df.to_csv(local_filename, index=False, sep="\t", encoding='ascii')
+    except:
+        error_dict = {}
+        error_dict["header"] = "Error Reading Data"
+        error_dict["line_number"] = "N/A"
+        error_dict["error_string"] = "Please fix your file"
+
+        validation_dict = {}
+        validation_dict["status"] = False
+        validation_dict["errors"] = [error_dict]
+        validation_dict["stats"] = []
+        validation_dict["stats"].append({"type":"total_rows", "value": 0})
+        validation_dict["stats"].append({"type":"valid_rows", "value": 0})
+
+        return json.dumps(validation_dict)
     
     pass_validation, failures, errors_list, valid_rows, total_rows = batch_validator.perform_batch_validation(local_filename)
 
