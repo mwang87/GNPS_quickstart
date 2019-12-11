@@ -304,7 +304,7 @@ def processconvert():
 @app.route('/downloadconvert', methods=['GET'])
 def custom_static():
     sessionid = request.cookies.get('sessionid')
-    return send_from_directory(os.path.join("/output", sessionid), "converted.tar")
+    return send_from_directory(os.path.join("/output", sessionid), "converted.zip")
 
 @app.route('/summaryconvert', methods=['GET'])
 def summary_file():
