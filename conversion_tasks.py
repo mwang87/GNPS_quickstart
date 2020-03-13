@@ -185,7 +185,7 @@ def convert_all(sessionid):
 
         summary_list.append(summary_object)
 
-    #Tar up the files
+    #Zip up the files
     cmd = "cd %s && zip %s -r %s" % (os.path.join(save_dir, sessionid), "converted.zip", "converted")
     os.system(cmd)
 

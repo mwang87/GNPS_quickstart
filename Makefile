@@ -17,7 +17,7 @@ bash: clean
 	docker run -it -p 5050:5009 --name gnpsquickstart gnpsquickstart bash
 
 attach:
-	docker exec -i -t gnpsquickstart /bin/bash
+	docker exec -i -t gnpsquickstart-worker1 /bin/bash
 
 
 

@@ -34,6 +34,7 @@ RUN R -e "remotes::install_github('chasemc/mzPlotter')"
 RUN pip3 install celery
 RUN pip3 install joblib
 RUN pip3 install redis
+RUN apt-get install zip unzip
 
 COPY . /app
 WORKDIR /app
