@@ -267,6 +267,7 @@ def get_featurenetworking_highres_parameters():
     invokeParameters = {}
     invokeParameters["workflow"] = "FEATURE-BASED-MOLECULAR-NETWORKING"
     invokeParameters["protocol"] = "None"
+    invokeParameters["workflow_version"] = "release_18"
     invokeParameters["desc"] = "Job Description"
     invokeParameters["library_on_server"] = "d.speclibs;"
 
