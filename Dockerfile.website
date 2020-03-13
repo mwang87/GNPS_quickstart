@@ -35,5 +35,8 @@ WORKDIR /src
 RUN git clone -b master --single-branch https://github.com/compomics/ThermoRawFileParser /src
 RUN msbuild
 
+RUN apt-get install zip unzip
+
+
 COPY . /app
 WORKDIR /app
