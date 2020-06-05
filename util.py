@@ -109,7 +109,7 @@ def get_classic_networking_lowres_parameters():
     invokeParameters = {}
     invokeParameters["workflow"] = "METABOLOMICS-SNETS-V2"
     invokeParameters["protocol"] = "None"
-    invokeParameters["workflow_version"] = "release_18"
+    invokeParameters["workflow_version"] = "release_22"
     invokeParameters["library_on_server"] = "d.speclibs;"
     invokeParameters["tolerance.PM_tolerance"] = "2.0"
     invokeParameters["tolerance.Ion_tolerance"] = "0.5"
@@ -139,7 +139,7 @@ def get_classic_networking_highres_parameters():
     invokeParameters = {}
     invokeParameters["workflow"] = "METABOLOMICS-SNETS-V2"
     invokeParameters["protocol"] = "None"
-    invokeParameters["workflow_version"] = "release_18"
+    invokeParameters["workflow_version"] = "release_22"
     invokeParameters["library_on_server"] = "d.speclibs;"
     invokeParameters["tolerance.PM_tolerance"] = "0.05"
     invokeParameters["tolerance.Ion_tolerance"] = "0.05"
