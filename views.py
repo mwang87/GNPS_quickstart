@@ -283,8 +283,9 @@ import conversion_tasks
 
 @app.route('/conversion', methods=['GET'])
 def conversion():
-    response = make_response(render_template('conversion.html'))
-    response.set_cookie('sessionid', str(uuid.uuid4()))
+    sessionid = str(uuid.uuid4())
+    response = make_response(render_template('conversion.html', sessionid=sessionid))
+    response.set_cookie('sessionid', sessionid)
     return response
 
 @app.route('/conversionupload', methods=['POST'])
@@ -300,19 +301,18 @@ def processconvert():
 
     return json.dumps(summary_list)
 
+@app.route('/conversion/file', methods=['GET'])
+def getconvertedfile():
+    filename = os.path.basename(request.args.get("filename"))
+    sessionid =  os.path.basename(request.args.get("sessionid"))
+
+    return send_from_directory(os.path.join("/output", sessionid, "converted"),  os.path.basename(filename))
+
 """Custom way to send files back to client"""
 @app.route('/downloadconvert', methods=['GET'])
 def custom_static():
     sessionid = request.cookies.get('sessionid')
     return send_from_directory(os.path.join("/output", sessionid), "converted.zip")
-
-@app.route('/summaryconvert', methods=['GET'])
-def summary_file():
-    sessionid = request.cookies.get('sessionid')
-    filename = request.args.get("filename")
-
-    return send_from_directory(os.path.join("/output", sessionid, "summary"), filename + ".html")
-
 
 #MassIVE Dataset Submission Endpoints
 @app.route('/massivesubmission', methods=['GET'])

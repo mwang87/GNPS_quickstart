@@ -98,12 +98,6 @@ def save_single_file(request):
 
     print(request_file.filename)
 
-@celery_instance.task(time_limit=120)
-def summarize_file(input_filename, output_html):
-    cmd = "Rscript mzscript.R %s %s" % (input_filename, output_html)
-    print(cmd)
-    os.system(cmd)
-
 @celery_instance.task()
 def cleanup_task(sessionid):
     save_dir = "/output"
@@ -172,16 +166,11 @@ def convert_all(sessionid):
 
     all_converted_files = glob.glob(os.path.join(save_dir, sessionid, "converted", "*.mzML"))
 
-    #Create Summary For Files
-    for filename in all_converted_files:
-        html_filename = os.path.join(output_summary_folder, os.path.basename(filename) + ".html")
-        summarize_file.delay(filename, html_filename)
-
     summary_list = []
     for converted_file in all_converted_files:
         summary_object = {}
         summary_object["filename"] = os.path.basename(converted_file)
-        summary_object["summaryurl"] = "/summary?filename=%s" % (os.path.basename(converted_file))
+        summary_object["summaryfilename"] = os.path.basename(converted_file)
 
         summary_list.append(summary_object)
 

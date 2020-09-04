@@ -158,13 +158,21 @@
                     return {}
                 },
                 methods: {
-                    clickMe: function(event) {
-                        analysis_url = "/summaryconvert?filename=" + encodeURIComponent(this.$props["filename"])
+                    clickSummary: function(event) {
+                        analysis_url = "https://gnps-lcms.ucsd.edu/?usi=mzspec:GNPS:QUICKSTART-(( sessionid ))-" + encodeURIComponent(this.$props["filename"])
                         var win = window.open(analysis_url, '_blank');
+                        win.focus();
+                    },
+                    clickDownload: function(event) {
+                        url = "/conversion/file?sessionid=(( sessionid ))&filename=" + encodeURIComponent(this.$props["filename"])
+                        var win = window.open(url, '_blank');
                         win.focus();
                     }
                 },
-                template: '<div><button class="btn btn-secondary btn-sm" style="margin-bottom:4px" v-on:click="clickMe">View Summary</button></div>'
+                template: `<div>
+                <button class="btn btn-secondary btn-sm" style="margin-bottom:4px" v-on:click="clickSummary">View Summary</button>
+                <button class="btn btn-secondary btn-sm" style="margin-bottom:4px" v-on:click="clickDownload">Download File</button>
+                </div>`
             })
             var app4 = new Vue({
                 el: '#app-4',
