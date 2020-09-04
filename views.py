@@ -283,7 +283,7 @@ import conversion_tasks
 
 @app.route('/conversion', methods=['GET'])
 def conversion():
-    sessionid = str(uuid.uuid4())
+    sessionid = str(uuid.uuid4()).replace("-", "")
     response = make_response(render_template('conversion.html', sessionid=sessionid))
     response.set_cookie('sessionid', sessionid)
     return response
