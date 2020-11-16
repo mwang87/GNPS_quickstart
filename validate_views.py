@@ -41,11 +41,16 @@ def validatebatchpost():
     
     local_filename = os.path.join(app.config['UPLOAD_FOLDER'], str(uuid.uuid4()))
     request_file.save(local_filename)
+
+    truncate_value = 2000
+
+    if "full" in request.values:
+        truncate_value = 50000
      
     """Trying stuff out with pandas"""
     try:
         metadata_df = pd.read_csv(local_filename, keep_default_na=False, sep="\t")
-        metadata_df = metadata_df.truncate(after=2000)
+        metadata_df = metadata_df.truncate(after=truncate_value)
         metadata_df.to_csv(local_filename, index=False, sep="\t", encoding='ascii')
     except:
         error_dict = {}
