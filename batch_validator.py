@@ -67,7 +67,7 @@ def perform_batch_validation(filename):
             NotEmptyValidator()
         ],
         'LIBQUALITY': [
-            SetValidator(valid_set=["1", "2", "3"])
+            SetValidator(valid_set=["1", "2", "3", "4"])
         ],
         'GENUS': [
             NotEmptyValidator()
