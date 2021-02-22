@@ -223,7 +223,7 @@ def get_featurenetworking_lowres_parameters():
     invokeParameters = {}
     invokeParameters["workflow"] = "FEATURE-BASED-MOLECULAR-NETWORKING"
     invokeParameters["protocol"] = "None"
-    invokeParameters["workflow_version"] = "release_18"
+    invokeParameters["workflow_version"] = "release_27"
     invokeParameters["desc"] = "Job Description"
     invokeParameters["library_on_server"] = "d.speclibs;"
 
@@ -255,8 +255,21 @@ def get_featurenetworking_lowres_parameters():
     invokeParameters["GROUP_COUNT_AGGREGATE_METHOD"] = "Mean"
     invokeParameters["QUANT_FILE_NORM"] = "RowSum"
 
+    # Stats
+    invokeParameters["RUN_STATS"] = "No"
+    invokeParameters["METADATA_COLUMN"] = "None"
+    invokeParameters["METADATA_COLUMN_FACET"] = "None"
+    invokeParameters["METADATA_CONDITION_ONE"] = "None"
+    invokeParameters["METADATA_CONDITION_TWO"] = "None"
+
     #External tools
     invokeParameters["RUN_DEREPLICATOR"] = "1"
+
+    # Qiime2
+    invokeParameters["QIIME2_PCOA_DISTANCE"] = "cosine"
+
+    # Metadata
+    invokeParameters["googlesheetsmetadata"] = "None"
 
     invokeParameters["email"] = "ccms.web@gmail.com"
     invokeParameters["uuid"] = "1DCE40F7-1211-0001-979D-15DAB2D0B500"
@@ -267,7 +280,7 @@ def get_featurenetworking_highres_parameters():
     invokeParameters = {}
     invokeParameters["workflow"] = "FEATURE-BASED-MOLECULAR-NETWORKING"
     invokeParameters["protocol"] = "None"
-    invokeParameters["workflow_version"] = "release_18"
+    invokeParameters["workflow_version"] = "release_27"
     invokeParameters["desc"] = "Job Description"
     invokeParameters["library_on_server"] = "d.speclibs;"
 
@@ -299,8 +312,21 @@ def get_featurenetworking_highres_parameters():
     invokeParameters["GROUP_COUNT_AGGREGATE_METHOD"] = "Mean"
     invokeParameters["QUANT_FILE_NORM"] = "RowSum"
 
+    # Stats
+    invokeParameters["RUN_STATS"] = "No"
+    invokeParameters["METADATA_COLUMN"] = "None"
+    invokeParameters["METADATA_COLUMN_FACET"] = "None"
+    invokeParameters["METADATA_CONDITION_ONE"] = "None"
+    invokeParameters["METADATA_CONDITION_TWO"] = "None"
+
     #External tools
     invokeParameters["RUN_DEREPLICATOR"] = "1"
+
+    # Qiime2
+    invokeParameters["QIIME2_PCOA_DISTANCE"] = "cosine"
+
+    # Metadata
+    invokeParameters["googlesheetsmetadata"] = "None"
 
     invokeParameters["email"] = "ccms.web@gmail.com"
     invokeParameters["uuid"] = "1DCE40F7-1211-0001-979D-15DAB2D0B500"
@@ -326,7 +352,8 @@ def invoke_workflow(base_url, parameters, login, password):
     r = s.post('https://' + base_url + '/ProteoSAFe/InvokeTools', data=parameters, verify=False)
     task_id = r.text
 
-    print(r.text)
+    import sys
+    print(r.text, file=sys.stderr, flush=True)
 
     if len(task_id) > 4 and len(task_id) < 60:
         print("Launched Task: : " + r.text)
