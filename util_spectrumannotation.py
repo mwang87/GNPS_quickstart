@@ -56,6 +56,32 @@ def launch_addreferencespectrum_workflow(spectrum_json, local_filename, remote_f
 
     return task_id
 
+def launch_updatereferencespectrum_workflow(spectrum_json, local_filename, remote_filename, username, password, email, test=True):
+    invokeParameters = get_updatereferencespectra_parameters()
+    invokeParameters["email"] = email
+
+    invokeParameters["spec_on_server"] = remote_filename
+    invokeParameters["ADDSPECTRA_COMPOUND_NAME"] = spectrum_json["COMPOUND_NAME"]
+    invokeParameters["ADDSPECTRA_CHARGE"] = spectrum_json["CHARGE"]
+    invokeParameters["ADDSPECTRA_MOLECULEMASS"] = "0"
+    invokeParameters["ADDSPECTRA_INSTRUMENT"] = spectrum_json["INSTRUMENT"]
+    invokeParameters["ADDSPECTRA_IONSOURCE"] = spectrum_json["IONSOURCE"]
+    invokeParameters["ADDSPECTRA_SMILES"] = spectrum_json["SMILES"]
+    invokeParameters["ADDSPECTRA_INCHI"] = spectrum_json["INCHI"]
+    invokeParameters["ADDSPECTRA_INCHIAUX"] = spectrum_json["INCHIAUX"]
+    invokeParameters["ADDSPECTRA_IONMODE"] = spectrum_json["IONMODE"]
+    invokeParameters["ADDSPECTRA_PUBMED"] = spectrum_json["PUBMED"]
+    invokeParameters["ADDSPECTRA_ACQUISITION"] = spectrum_json["ACQUISITION"]
+    invokeParameters["ADDSPECTRA_EXACTMASS"] = spectrum_json["EXACTMASS"]
+    invokeParameters["ADDSPECTRA_DATACOLLECTOR"] = spectrum_json["DATACOLLECTOR"]
+    invokeParameters["ADDSPECTRA_ADDUCT"] = spectrum_json["ADDUCT"]
+    invokeParameters["ADDSPECTRA_CASNUMBER"] = spectrum_json["CASNUMBER"]
+    invokeParameters["ADDSPECTRA_PI"] = spectrum_json["PI"]
+
+    task_id = util.invoke_workflow("gnps.ucsd.edu", invokeParameters, username, password)
+
+    return task_id
+
 
 def get_referencespectra_parameters():
     invokeParameters = {}
@@ -71,6 +97,22 @@ def get_referencespectra_parameters():
     invokeParameters["ADDSPECTRA_USERGENUS"] = "N/A"
     invokeParameters["ADDSPECTRA_USERSPECIES"] = "N/A"
     invokeParameters["ADDSPECTRA_EXTRACTSCAN"] = "1"
+
+    invokeParameters["email"] = "ccms.web@gmail.com"
+
+    return invokeParameters
+
+def get_updatereferencespectra_parameters():
+    invokeParameters = {}
+    invokeParameters["workflow"] = "UPDATE-SINGLE-ANNOTATED-BRONZE"
+    invokeParameters["protocol"] = "None"
+    invokeParameters["desc"] = "Job Description"
+
+    invokeParameters["ADDSPECTRA_LIBQUALITY"] = "3"
+    invokeParameters["INTEREST"] = "N/A"
+    invokeParameters["ADDSPECTRA_STRAIN"] = "N/A"
+    invokeParameters["ADDSPECTRA_USERGENUS"] = "N/A"
+    invokeParameters["ADDSPECTRA_USERSPECIES"] = "N/A"
 
     invokeParameters["email"] = "ccms.web@gmail.com"
 
