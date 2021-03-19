@@ -56,11 +56,10 @@ def launch_addreferencespectrum_workflow(spectrum_json, local_filename, remote_f
 
     return task_id
 
-def launch_updatereferencespectrum_workflow(spectrum_json, local_filename, remote_filename, username, password, email, test=True):
+def launch_updatereferencespectrum_workflow(spectrum_json, username, password, email, test=True):
     invokeParameters = get_updatereferencespectra_parameters()
     invokeParameters["email"] = email
 
-    invokeParameters["spec_on_server"] = remote_filename
     invokeParameters["ADDSPECTRA_COMPOUND_NAME"] = spectrum_json["COMPOUND_NAME"]
     invokeParameters["ADDSPECTRA_CHARGE"] = spectrum_json["CHARGE"]
     invokeParameters["ADDSPECTRA_MOLECULEMASS"] = "0"
