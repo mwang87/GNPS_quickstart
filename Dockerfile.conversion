@@ -1,18 +1,21 @@
-FROM chambm/pwiz-skyline-i-agree-to-the-vendor-licenses:3.0.20287-769529fa4
-
-MAINTAINER Mingxun Wang "mwang87@gmail.com"
+FROM chambm/pwiz-skyline-i-agree-to-the-vendor-licenses:3.0.19011-ca972c15b
+ENV PATH="/root/miniconda3/bin:${PATH}"
+ARG PATH="/root/miniconda3/bin:${PATH}"
 
 RUN apt-get update -y
-RUN apt-get install -y python3-pip python3-dev build-essential
+RUN apt-get install -y build-essential zip unzip wget
 
-RUN pip3 install ftputil
-RUN pip3 install flask
-RUN pip3 install gunicorn
-RUN pip3 install requests
-RUN pip3 install celery
-RUN pip3 install joblib
-RUN pip3 install redis
-RUN apt-get install -y zip unzip
+RUN wget \
+    https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
+    && mkdir /root/.conda \
+    && bash Miniconda3-latest-Linux-x86_64.sh -b \
+    && rm -f Miniconda3-latest-Linux-x86_64.sh 
+RUN conda --version
+RUN python --version
+
+RUN pip install ftputil flask gunicorn requests joblib redis
+RUN pip install -U celery
+# RUN python3 --version
 
 COPY . /app
 WORKDIR /app
