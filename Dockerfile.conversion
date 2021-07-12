@@ -1,4 +1,4 @@
-FROM chambm/pwiz-skyline-i-agree-to-the-vendor-licenses:3.0.19056-6b6b0a2b4
+FROM chambm/pwiz-skyline-i-agree-to-the-vendor-licenses:3.0.20287-769529fa4
 
 MAINTAINER Mingxun Wang "mwang87@gmail.com"
 
