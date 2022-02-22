@@ -301,6 +301,14 @@ def processconvert():
 
     return json.dumps(summary_list)
 
+@app.route('/processconvertagilent', methods=['GET', "POST"])
+def processconvertagilent():
+    sessionid = request.cookies.get('sessionid')
+    summary_list = conversion_tasks.convert_all(sessionid, renumber_scans=True)
+
+    return json.dumps(summary_list)
+
+
 @app.route('/conversion/file', methods=['GET'])
 def getconvertedfile():
     filename = os.path.basename(request.args.get("filename"))
