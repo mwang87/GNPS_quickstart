@@ -5,6 +5,7 @@ import requests
 import errno
 import glob
 import shutil
+import uuid
 
 try:
     from psims.mzml.writer import MzMLWriter
@@ -158,7 +159,7 @@ def convert_all(sessionid, renumber_scans=False):
     """mzXML/mzML Conversion"""
     for filename in all_mzXML_files + all_mzML_files:
         output_filename = os.path.basename(filename).replace(".mzXML", ".mzML")
-        cmd = 'wine msconvert %s --32 --zlib --ignoreUnknownInstrumentError --filter "peakPicking true 1-" --outdir %s --outfile %s' % (filename, output_conversion_folder, output_filename)
+        cmd = './bin/msconvert %s --32 --zlib --ignoreUnknownInstrumentError --filter "peakPicking true 1-" --outdir %s --outfile %s' % (filename, output_conversion_folder, output_filename)
         conversion_commands.append(cmd)
 
     """Converting in Parallel"""
@@ -175,7 +176,7 @@ def convert_all(sessionid, renumber_scans=False):
     if renumber_scans:
         print("RENUMBERING IN SERIAL")
 
-        all_converted_files = glob.glob(os.path.join(save_dir, sessionid, "converted", "*.mzML"))
+        all_converted_files = glob.glob(os.path.join(output_conversion_folder, "*.mzML"))
         output_converted_renumbered_folder = os.path.join(save_dir, sessionid, "converted_renumbered")
         try:
             os.mkdir(output_converted_renumbered_folder)
@@ -192,8 +193,11 @@ def convert_all(sessionid, renumber_scans=False):
             while not job.ready():
                 sleep(0.5)
         
+        
+
         # Cleanup
-        #shutil.rmtree(output_conversion_folder)
+        shutil.rmtree(output_conversion_folder)
+        shutil.move(output_converted_renumbered_folder, output_conversion_folder)
     
 
     all_converted_files = glob.glob(os.path.join(save_dir, sessionid, "converted", "*.mzML"))
@@ -221,52 +225,64 @@ def renumber_mzML_scans_task(input_mzML, output_mzML):
     scan_current = 1
     previous_ms1_scan = 0
 
-    with MzMLWriter(open(output_mzML, 'wb'), close=True) as out:
+    temp_mzML = os.path.join(os.path.dirname(output_mzML), "{}.mzML".format(str(uuid.uuid4())))
+
+    with MzMLWriter(open(temp_mzML, 'wb'), close=True) as out:
         # Add default controlled vocabularies
         out.controlled_vocabularies()
         # Open the run and spectrum list sections
         with out.run(id="my_analysis"):
-            #spectrum_count = len(scans) + sum([len(products) for _, products in scans])
-            run = pymzml.run.Reader(input_mzML)
-            for spectrum in run:
-                if spectrum['ms level'] == 1:
-                    out.write_spectrum(
-                        spectrum.mz, spectrum.i,
-                        id="scan={}".format(scan_current), params=[
-                            "MS1 Spectrum",
-                            {"ms level": 1},
-                            {"total ion current": sum(spectrum.i)}
-                        ],
-                        scan_start_time=spectrum.scan_time_in_minutes())
-                    previous_ms1_scan = scan_current
-                    scan_current += 1
-                elif spectrum["ms level"] == 2:
-                    precursor_spectrum = spectrum.selected_precursors[0]
-                    precursor_mz = precursor_spectrum["mz"]
-                    precursor_intensity = 0
-                    precursor_charge = 0
+            with out.spectrum_list(count=1):
+                #spectrum_count = len(scans) + sum([len(products) for _, products in scans])
+                run = pymzml.run.Reader(input_mzML)
+                for spectrum in run:
+                    if spectrum['ms level'] == 1:
+                        out.write_spectrum(
+                            spectrum.mz, spectrum.i,
+                            id="scan={}".format(scan_current), params=[
+                                "MS1 Spectrum",
+                                {"ms level": 1},
+                                {"total ion current": sum(spectrum.i)}
+                            ],
+                            scan_start_time=spectrum.scan_time_in_minutes())
+                        previous_ms1_scan = scan_current
+                        scan_current += 1
+                    elif spectrum["ms level"] == 2:
+                        precursor_spectrum = spectrum.selected_precursors[0]
+                        precursor_mz = precursor_spectrum["mz"]
+                        precursor_intensity = 0
+                        precursor_charge = 0
 
-                    try:
-                        precursor_charge = precursor_spectrum["charge"]
-                        precursor_intensity = precursor_spectrum["i"]
-                    except:
-                        pass
+                        try:
+                            precursor_charge = precursor_spectrum["charge"]
+                            precursor_intensity = precursor_spectrum["i"]
+                        except:
+                            pass
 
-                    out.write_spectrum(
-                        spectrum.mz, spectrum.i,
-                        id="scan={}".format(scan_current), params=[
-                            "MS1 Spectrum",
-                            {"ms level": 2},
-                            {"total ion current": sum(spectrum.i)}
-                        ],
-                        # Include precursor information
-                        precursor_information={
-                            "mz": precursor_mz,
-                            "intensity": precursor_intensity,
-                            "charge": precursor_charge,
-                            "scan_id": "scan={}".format(previous_ms1_scan),
-                            "activation": ["beam-type collisional dissociation", {"collision energy": spectrum["collision energy"]}]
-                        },
-                        scan_start_time=spectrum.scan_time_in_minutes())
+                        out.write_spectrum(
+                            spectrum.mz, spectrum.i,
+                            id="scan={}".format(scan_current), params=[
+                                "MS1 Spectrum",
+                                {"ms level": 2},
+                                {"total ion current": sum(spectrum.i)}
+                            ],
+                            # Include precursor information
+                            precursor_information={
+                                "mz": precursor_mz,
+                                "intensity": precursor_intensity,
+                                "charge": precursor_charge,
+                                "scan_id": "scan={}".format(previous_ms1_scan),
+                                "activation": ["beam-type collisional dissociation", {"collision energy": spectrum["collision energy"]}]
+                            },
+                            scan_start_time=spectrum.scan_time_in_minutes())
 
-                    scan_current += 1
+                        scan_current += 1
+
+    # Reconvert with msconvert
+    cmd = './bin/msconvert {} --32 --zlib --ignoreUnknownInstrumentError \
+        --outdir {} --outfile {}'.format(temp_mzML, os.path.dirname(output_mzML), os.path.basename(output_mzML))
+    print(cmd)
+    os.system(cmd)
+
+    # Cleanup
+    os.remove(temp_mzML)
