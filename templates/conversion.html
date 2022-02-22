@@ -29,6 +29,7 @@
               <div class="col-sm"></div>
               <div class="col-sm">
                   <button onclick="ConvertFiles()" class="btn btn-primary">Convert Uploaded Files</button>
+                  <button onclick="ConvertFilesAgilent()" class="btn btn-primary">Convert Uploaded Agilent Files (Make Scans Sequential)</button>
               </div>
               <div class="col-sm"></div>
             </div>
@@ -152,6 +153,29 @@
                     }
                 );
             }
+
+            function ConvertFilesAgilent(){
+                $("#loadMe").modal({
+                  backdrop: "static", //remove ability to close modal with click
+                  keyboard: false, //remove option to close with keyboard
+                  show: true //Display loader!
+                });
+                $.ajax(
+                    {
+                        url: "/processconvertagilent",
+                        success: function(result){
+                            $("#loadMe").modal("hide");
+                            
+                            app4._data.stats = result
+                            let r = Math.random().toString(36).substring(7);
+                            window.location = "/downloadconvert?" + r
+                        },
+                        dataType: "json"
+                    }
+                );
+            }
+
+            
             Vue.component('summary-linkout', {
                 props: ['filename'],
                 data: function() {

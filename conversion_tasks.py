@@ -3,14 +3,22 @@ import os
 import json
 import requests
 import errno
-from werkzeug.utils import secure_filename
 import glob
+import shutil
+
+try:
+    from psims.mzml.writer import MzMLWriter
+    import pymzml
+except:
+    pass
 
 from joblib import Parallel, delayed
+from werkzeug.utils import secure_filename
+
 import multiprocessing
 import subprocess
 from time import sleep
-import shutil
+
 
 celery_instance = Celery('conversion_tasks', backend='redis://gnpsquickstart-redis', broker='redis://gnpsquickstart-redis')
 
@@ -110,7 +118,7 @@ def cleanup_task(sessionid):
         else:
             os.remove(path_to_remove)
 
-def convert_all(sessionid):
+def convert_all(sessionid, renumber_scans=False):
     save_dir = "/output"
     output_conversion_folder = os.path.join(save_dir, sessionid, "converted")
     output_summary_folder = os.path.join(save_dir, sessionid, "summary")
@@ -164,6 +172,30 @@ def convert_all(sessionid):
         while not job.ready():
             sleep(0.5)
 
+    if renumber_scans:
+        print("RENUMBERING IN SERIAL")
+
+        all_converted_files = glob.glob(os.path.join(save_dir, sessionid, "converted", "*.mzML"))
+        output_converted_renumbered_folder = os.path.join(save_dir, sessionid, "converted_renumbered")
+        try:
+            os.mkdir(output_converted_renumbered_folder)
+        except:
+            print("output_converted_renumbered_folder Exists")
+
+        all_jobs = []
+        for filename in all_converted_files:
+            output_filename = os.path.join(output_converted_renumbered_folder, os.path.basename(filename))
+            worker_job = renumber_mzML_scans_task.delay(filename, output_filename)
+            all_jobs.append(worker_job)
+
+        for job in all_jobs:
+            while not job.ready():
+                sleep(0.5)
+        
+        # Cleanup
+        #shutil.rmtree(output_conversion_folder)
+    
+
     all_converted_files = glob.glob(os.path.join(save_dir, sessionid, "converted", "*.mzML"))
 
     summary_list = []
@@ -183,3 +215,58 @@ def convert_all(sessionid):
 
     return summary_list
 
+# This is mainly for agilent data
+@celery_instance.task(time_limit=120)
+def renumber_mzML_scans_task(input_mzML, output_mzML):
+    scan_current = 1
+    previous_ms1_scan = 0
+
+    with MzMLWriter(open(output_mzML, 'wb'), close=True) as out:
+        # Add default controlled vocabularies
+        out.controlled_vocabularies()
+        # Open the run and spectrum list sections
+        with out.run(id="my_analysis"):
+            #spectrum_count = len(scans) + sum([len(products) for _, products in scans])
+            run = pymzml.run.Reader(input_mzML)
+            for spectrum in run:
+                if spectrum['ms level'] == 1:
+                    out.write_spectrum(
+                        spectrum.mz, spectrum.i,
+                        id="scan={}".format(scan_current), params=[
+                            "MS1 Spectrum",
+                            {"ms level": 1},
+                            {"total ion current": sum(spectrum.i)}
+                        ],
+                        scan_start_time=spectrum.scan_time_in_minutes())
+                    previous_ms1_scan = scan_current
+                    scan_current += 1
+                elif spectrum["ms level"] == 2:
+                    precursor_spectrum = spectrum.selected_precursors[0]
+                    precursor_mz = precursor_spectrum["mz"]
+                    precursor_intensity = 0
+                    precursor_charge = 0
+
+                    try:
+                        precursor_charge = precursor_spectrum["charge"]
+                        precursor_intensity = precursor_spectrum["i"]
+                    except:
+                        pass
+
+                    out.write_spectrum(
+                        spectrum.mz, spectrum.i,
+                        id="scan={}".format(scan_current), params=[
+                            "MS1 Spectrum",
+                            {"ms level": 2},
+                            {"total ion current": sum(spectrum.i)}
+                        ],
+                        # Include precursor information
+                        precursor_information={
+                            "mz": precursor_mz,
+                            "intensity": precursor_intensity,
+                            "charge": precursor_charge,
+                            "scan_id": "scan={}".format(previous_ms1_scan),
+                            "activation": ["beam-type collisional dissociation", {"collision energy": spectrum["collision energy"]}]
+                        },
+                        scan_start_time=spectrum.scan_time_in_minutes())
+
+                    scan_current += 1
