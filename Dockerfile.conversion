@@ -1,4 +1,4 @@
-FROM chambm/pwiz-skyline-i-agree-to-the-vendor-licenses:3.0.19011-ca972c15b
+FROM chambm/pwiz-skyline-i-agree-to-the-vendor-licenses:3.0.21354-9ee14c7
 ENV PATH="/root/miniconda3/bin:${PATH}"
 ARG PATH="/root/miniconda3/bin:${PATH}"
 
