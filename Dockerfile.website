@@ -1,10 +1,9 @@
-FROM ubuntu:18.04
-FROM mono:latest
+#FROM ubuntu:20.04
+FROM mono:6.12.0.182
 
 MAINTAINER Mingxun Wang "mwang87@gmail.com"
 
-RUN apt-get update -y
-RUN apt-get install -y python3-pip python3-dev build-essential
+RUN apt-get update && apt-get install -y python3-pip python3-dev build-essential zip unzip
 
 RUN pip3 install ftputil
 RUN pip3 install flask
@@ -34,9 +33,6 @@ RUN apt-get install -y git
 WORKDIR /src
 RUN git clone -b master --single-branch https://github.com/compomics/ThermoRawFileParser /src
 RUN msbuild
-
-RUN apt-get install zip unzip
-
 
 COPY . /app
 WORKDIR /app
