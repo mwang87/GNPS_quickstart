@@ -1,0 +1,30 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  schedule:
+   - cron:  '0 0 * * *'
+
+jobs:
+
+  build-docker-main:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      # with:
+      #   submodules: recursive
+    - name: Build the Docker image
+      run: |
+        docker build . --file Dockerfile.website
+  build-docker-worker:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      # with:
+      #   submodules: recursive
+    - name: Build the Docker image
+      run: |
+        docker build . --file Dockerfile.conversion

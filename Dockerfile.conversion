@@ -13,11 +13,8 @@ RUN wget \
 RUN conda --version
 RUN python --version
 
-RUN pip install ftputil flask gunicorn requests joblib redis
-RUN pip install -U celery
-RUN pip install pymzml psims
-
-# RUN python3 --version
+COPY requirements.txt .
+RUN pip install -r requirements.txt
 
 COPY . /app
 WORKDIR /app

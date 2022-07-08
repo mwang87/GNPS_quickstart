@@ -1,20 +1,9 @@
-FROM ubuntu:18.04
-FROM mono:latest
+#FROM ubuntu:20.04
+FROM mono:6.12.0.182
 
 MAINTAINER Mingxun Wang "mwang87@gmail.com"
 
-RUN apt-get update -y
-RUN apt-get install -y python3-pip python3-dev build-essential
-
-RUN pip3 install ftputil
-RUN pip3 install flask
-RUN pip3 install gunicorn
-RUN pip3 install requests
-RUN pip3 install celery
-RUN pip3 install joblib
-RUN pip3 install redis
-RUN pip3 install vladiate
-RUN pip3 install pandas
+RUN apt-get update && apt-get install -y python3-pip python3-dev build-essential zip unzip git
 
 ################## METADATA ######################
 LABEL base_image="mono:latest"
@@ -29,14 +18,12 @@ LABEL about.license="SPDX:Unknown"
 LABEL about.tags="Proteomics"
 
 ################## INSTALLATION ######################
-RUN apt-get install -y git
-
 WORKDIR /src
 RUN git clone -b master --single-branch https://github.com/compomics/ThermoRawFileParser /src
 RUN msbuild
 
-RUN apt-get install zip unzip
-
+COPY requirements.txt .
+RUN pip3 install -r requirements.txt
 
 COPY . /app
 WORKDIR /app
