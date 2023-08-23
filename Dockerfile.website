@@ -1,29 +1,27 @@
-#FROM ubuntu:20.04
-FROM mono:6.12.0.182
-
+FROM continuumio/miniconda3:4.10.3
 MAINTAINER Mingxun Wang "mwang87@gmail.com"
 
-RUN apt-get update && apt-get install -y python3-pip python3-dev build-essential zip unzip git
+RUN apt-get update && apt-get install -y build-essential zip
 
-################## METADATA ######################
-LABEL base_image="mono:latest"
-LABEL version="1"
-LABEL software="ThermoRawFileParser"
-LABEL software.version="1.0.0"
-LABEL about.summary="A software to convert Thermo RAW files to mgf and mzML"
-LABEL about.home="https://github.com/compomics/ThermoRawFileParser"
-LABEL about.documentation="https://github.com/compomics/ThermoRawFileParser"
-LABEL about.license_file="https://github.com/compomics/ThermoRawFileParser"
-LABEL about.license="SPDX:Unknown"
-LABEL about.tags="Proteomics"
+# ################## METADATA ######################
+# LABEL base_image="mono:latest"
+# LABEL version="1"
+# LABEL software="ThermoRawFileParser"
+# LABEL software.version="1.0.0"
+# LABEL about.summary="A software to convert Thermo RAW files to mgf and mzML"
+# LABEL about.home="https://github.com/compomics/ThermoRawFileParser"
+# LABEL about.documentation="https://github.com/compomics/ThermoRawFileParser"
+# LABEL about.license_file="https://github.com/compomics/ThermoRawFileParser"
+# LABEL about.license="SPDX:Unknown"
+# LABEL about.tags="Proteomics"
 
-################## INSTALLATION ######################
-WORKDIR /src
-RUN git clone -b master --single-branch https://github.com/compomics/ThermoRawFileParser /src
-RUN msbuild
+# ################## INSTALLATION ######################
+# WORKDIR /src
+# RUN git clone -b master --single-branch https://github.com/compomics/ThermoRawFileParser /src
+# RUN msbuild
 
 COPY requirements.txt .
-RUN pip3 install -r requirements.txt
+RUN pip install -r requirements.txt
 
 COPY . /app
 WORKDIR /app
