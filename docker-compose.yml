@@ -26,6 +26,18 @@ services:
     restart: unless-stopped
     command: /app/run_worker.sh
 
+  gnpsquickstart-beat1:
+    build:
+      context: .
+      dockerfile: Dockerfile.beat
+    container_name: gnpsquickstart-beat1
+    volumes:
+        - ./output:/output:rw
+    networks:
+      - default
+    restart: unless-stopped
+    command: /app/run_beat.sh
+
   gnpsquickstart-redis:
     image: redis
     container_name: gnpsquickstart-redis
