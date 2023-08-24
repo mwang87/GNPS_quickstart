@@ -279,7 +279,7 @@ def depositsinglespectrum():
 
 
 #Conversion Endpoints
-import conversion_tasks
+import tasks_conversion
 
 @app.route('/conversion', methods=['GET'])
 def conversion():
@@ -290,21 +290,21 @@ def conversion():
 
 @app.route('/conversionupload', methods=['POST'])
 def conversionupload():
-    upload_string = conversion_tasks.save_single_file(request)
+    upload_string = tasks_conversion.save_single_file(request)
 
     return "{}"
 
 @app.route('/processconvert', methods=['GET', "POST"])
 def processconvert():
     sessionid = request.cookies.get('sessionid')
-    summary_list = conversion_tasks.convert_all(sessionid)
+    summary_list = tasks_conversion.convert_all(sessionid)
 
     return json.dumps(summary_list)
 
 @app.route('/processconvertagilent', methods=['GET', "POST"])
 def processconvertagilent():
     sessionid = request.cookies.get('sessionid')
-    summary_list = conversion_tasks.convert_all(sessionid, renumber_scans=True)
+    summary_list = tasks_conversion.convert_all(sessionid, renumber_scans=True)
 
     return json.dumps(summary_list)
 

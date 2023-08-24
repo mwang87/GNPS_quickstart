@@ -20,8 +20,7 @@ import multiprocessing
 import subprocess
 from time import sleep
 
-
-celery_instance = Celery('conversion_tasks', backend='redis://gnpsquickstart-redis', broker='redis://gnpsquickstart-redis')
+celery_instance = Celery('tasks_conversion', backend='redis://gnpsquickstart-redis', broker='redis://gnpsquickstart-redis')
 
 @celery_instance.task(time_limit=180)
 def run_shell_command(script_to_run):
@@ -109,6 +108,8 @@ def save_single_file(request):
 
 @celery_instance.task()
 def cleanup_task(sessionid):
+    print("CLEANING UP", sessionid)
+
     save_dir = "/output"
     remove_path = os.path.join(save_dir, sessionid, "*")
     all_paths_to_remove = glob.glob(remove_path)
@@ -215,7 +216,7 @@ def convert_all(sessionid, renumber_scans=False):
     os.system(cmd)
 
     #Schedule Cleanup
-    cleanup_task.apply_async( args=[sessionid], countdown=84600)
+    cleanup_task.apply_async( args=[sessionid], countdown=3600)
 
     return summary_list
 
@@ -286,3 +287,9 @@ def renumber_mzML_scans_task(input_mzML, output_mzML):
 
     # Cleanup
     os.remove(temp_mzML)
+
+celery_instance.conf.task_routes = {
+    'tasks_conversion.run_shell_command': {'queue': 'conversion'},
+    'tasks_conversion.cleanup_task': {'queue': 'conversion'},
+    'tasks_conversion.renumber_mzML_scans_task': {'queue': 'conversion'},
+}

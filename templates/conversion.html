@@ -185,7 +185,7 @@
                 },
                 methods: {
                     clickSummary: function(event) {
-                        analysis_url = "https://gnps-lcms.ucsd.edu/?usi=mzspec:GNPS:QUICKSTART-(( sessionid ))-" + encodeURIComponent(this.$props["filename"])
+                        analysis_url = "https://dashboard.gnps2.org/?usi=mzspec:GNPS:QUICKSTART-(( sessionid ))-" + encodeURIComponent(this.$props["filename"])
                         var win = window.open(analysis_url, '_blank');
                         win.focus();
                     },

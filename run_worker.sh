@@ -1,3 +1,3 @@
 #!/bin/bash
 
-celery -A conversion_tasks worker -l info -c 4
+celery -A tasks_conversion worker -l info -c 4 --queues=conversion
