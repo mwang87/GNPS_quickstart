@@ -216,7 +216,7 @@ def convert_all(sessionid, renumber_scans=False):
     os.system(cmd)
 
     #Schedule Cleanup
-    cleanup_task.apply_async( args=[sessionid], countdown=10)
+    cleanup_task.apply_async( args=[sessionid], countdown=3600)
 
     return summary_list
 
