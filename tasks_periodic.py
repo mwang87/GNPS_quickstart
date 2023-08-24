@@ -26,3 +26,7 @@ celery_instance = Celery('tasks_conversion', backend='redis://gnpsquickstart-red
 @celery_instance.task(time_limit=180)
 def test_up():
     return "Up"
+
+celery_instance.conf.task_routes = {
+    'tasks_periodic.test_up': {'queue': 'periodic'},
+}
