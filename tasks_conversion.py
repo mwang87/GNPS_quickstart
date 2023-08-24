@@ -21,7 +21,7 @@ import subprocess
 from time import sleep
 
 
-celery_instance = Celery('conversion_tasks', backend='redis://gnpsquickstart-redis', broker='redis://gnpsquickstart-redis')
+celery_instance = Celery('tasks_conversion', backend='redis://gnpsquickstart-redis', broker='redis://gnpsquickstart-redis')
 
 @celery_instance.task(time_limit=180)
 def run_shell_command(script_to_run):
