@@ -41,6 +41,7 @@ services:
   gnpsquickstart-redis:
     image: redis
     container_name: gnpsquickstart-redis
+    restart: unless-stopped
     networks:
       - default
 
