@@ -92,7 +92,17 @@ def save_single_file(request):
         local_filename = os.path.join(save_dir, sessionid, "input", filename)
 
     if 'file' not in request.files:
+        print("CONVERSION UPLOAD MISSING FILE", "session", sessionid, "form_keys", list(request.form.keys()), flush=True)
         return "{}"
+
+    print(
+        "CONVERSION UPLOAD",
+        "session", sessionid,
+        "orig_filename", request_file.filename,
+        "fullPath", request.form.get("fullPath"),
+        "save_path", local_filename,
+        flush=True
+    )
 
     if not os.path.exists(os.path.dirname(local_filename)):
         try:
@@ -103,8 +113,10 @@ def save_single_file(request):
 
 
     request_file.save(local_filename)
-
-    print(request_file.filename)
+    try:
+        print("CONVERSION UPLOAD SAVED", local_filename, "bytes", os.path.getsize(local_filename), flush=True)
+    except Exception as exc:
+        print("CONVERSION UPLOAD SAVED", local_filename, "size_error", exc, flush=True)
 
 @celery_instance.task()
 def cleanup_task(sessionid):
@@ -122,20 +134,39 @@ def cleanup_task(sessionid):
 
 def convert_all(sessionid, renumber_scans=False):
     save_dir = "/output"
+    session_dir = os.path.join(save_dir, sessionid)
+    input_dir = os.path.join(save_dir, sessionid, "input")
     output_conversion_folder = os.path.join(save_dir, sessionid, "converted")
     output_summary_folder = os.path.join(save_dir, sessionid, "summary")
 
     try:
-        os.mkdir(output_summary_folder)
+        os.makedirs(session_dir, exist_ok=True)
+        os.makedirs(output_conversion_folder, exist_ok=True)
+        os.makedirs(output_summary_folder, exist_ok=True)
     except:
         print("Summary Folder Exists")
 
-    all_bruker_files = glob.glob(os.path.join(save_dir, sessionid, "input", "*.d"))
-    all_thermo_files = glob.glob(os.path.join(save_dir, sessionid, "input", "*.raw"))
-    all_thermo_files += glob.glob(os.path.join(save_dir, sessionid, "input", "*.RAW"))
-    all_sciex_files = glob.glob(os.path.join(save_dir, sessionid, "input", "*.wiff"))
-    all_mzXML_files = glob.glob(os.path.join(save_dir, sessionid, "input", "*.mzXML"))
-    all_mzML_files = glob.glob(os.path.join(save_dir, sessionid, "input", "*.mzML"))
+    all_bruker_files = glob.glob(os.path.join(input_dir, "**", "*.d"), recursive=True)
+    all_thermo_files = glob.glob(os.path.join(input_dir, "**", "*.raw"), recursive=True)
+    all_thermo_files += glob.glob(os.path.join(input_dir, "**", "*.RAW"), recursive=True)
+    all_sciex_files = glob.glob(os.path.join(input_dir, "**", "*.wiff"), recursive=True)
+    all_mzXML_files = glob.glob(os.path.join(input_dir, "**", "*.mzXML"), recursive=True)
+    all_mzXML_files += glob.glob(os.path.join(input_dir, "**", "*.mzxml"), recursive=True)
+    all_mzML_files = glob.glob(os.path.join(input_dir, "**", "*.mzML"), recursive=True)
+    all_mzML_files += glob.glob(os.path.join(input_dir, "**", "*.mzml"), recursive=True)
+
+    input_counts = {
+        "bruker": len(all_bruker_files),
+        "thermo": len(all_thermo_files),
+        "sciex": len(all_sciex_files),
+        "mzxml": len(all_mzXML_files),
+        "mzml": len(all_mzML_files),
+    }
+    total_inputs = sum(input_counts.values())
+    print("CONVERSION INPUT COUNTS", input_counts, "TOTAL", total_inputs, flush=True)
+
+    if total_inputs == 0:
+        return []
 
     conversion_commands = []
 
@@ -175,14 +206,14 @@ def convert_all(sessionid, renumber_scans=False):
             sleep(0.5)
 
     if renumber_scans:
-        print("RENUMBERING IN SERIAL")
+        print("RENUMBERING IN SERIAL", flush=True)
 
         all_converted_files = glob.glob(os.path.join(output_conversion_folder, "*.mzML"))
         output_converted_renumbered_folder = os.path.join(save_dir, sessionid, "converted_renumbered")
         try:
             os.mkdir(output_converted_renumbered_folder)
         except:
-            print("output_converted_renumbered_folder Exists")
+            print("output_converted_renumbered_folder Exists", flush=True)
 
         all_jobs = []
         for filename in all_converted_files:
@@ -202,6 +233,7 @@ def convert_all(sessionid, renumber_scans=False):
     
 
     all_converted_files = glob.glob(os.path.join(save_dir, sessionid, "converted", "*.mzML"))
+    print("CONVERSION OUTPUT COUNT", len(all_converted_files), flush=True)
 
     summary_list = []
     for converted_file in all_converted_files:

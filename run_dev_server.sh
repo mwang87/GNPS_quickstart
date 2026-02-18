@@ -1,3 +1,3 @@
 #!/bin/bash
 
-python ./main.py
+source activate python313 && python ./main.py
