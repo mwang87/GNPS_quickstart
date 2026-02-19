@@ -1,20 +1,20 @@
-FROM chambm/pwiz-skyline-i-agree-to-the-vendor-licenses:3.0.21354-9ee14c7
-ENV PATH="/root/miniconda3/bin:${PATH}"
-ARG PATH="/root/miniconda3/bin:${PATH}"
+FROM proteowizard/pwiz-skyline-i-agree-to-the-vendor-licenses:3.0.25182-6ca4f8b
 
-RUN apt-get update -y
-RUN apt-get install -y build-essential zip unzip wget
+RUN apt-get update && apt-get install -y build-essential libarchive-dev wget vim zip
 
-RUN wget \
-    https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
-    && mkdir /root/.conda \
-    && bash Miniconda3-latest-Linux-x86_64.sh -b \
-    && rm -f Miniconda3-latest-Linux-x86_64.sh 
-RUN conda --version
-RUN python --version
+ENV CONDA_DIR /opt/conda
+RUN wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh -O ~/miniforge.sh && /bin/bash ~/miniforge.sh -b -p /opt/conda
+ENV PATH=$CONDA_DIR/bin:$PATH
+
+# Adding to bashrc
+RUN echo "export PATH=$CONDA_DIR:$PATH" >> ~/.bashrc
+
+# Forcing version of Python
+RUN mamba create -n python313 python=3.13 -y
+
 
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN /bin/bash -c 'source activate python313 && pip install -r requirements.txt'
 
 COPY . /app
 WORKDIR /app
